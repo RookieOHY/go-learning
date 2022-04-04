@@ -43,7 +43,7 @@ func main03() {
 }
 
 //关闭channel:如果channel已经关闭了，那么不允许向channel发送数据，否则会报异常。
-func main() {
+func main04() {
 	ch := make(chan int, 5)
 	go func() {
 		ch <- 5
@@ -59,4 +59,41 @@ func main() {
 
 }
 
-//单向
+//单向channel:表示的是channel仅可以存 或者 仅可以取
+func main05() {
+	// 只能发送但是不可以接受
+	ch1 := make(chan<- int)
+	//只能接受但是不可以发送
+	//ch2:=make(<-chan int)
+	close(ch1)
+}
+
+//select（监听）+channel实现多路复用：监听多个channel 只要任意一个channel存在结果 打印结果(只会选择其中一个结果) 都不存在结果 main协程会一直等待
+func main() {
+	ch01 := make(chan string)
+	ch02 := make(chan string)
+	ch03 := make(chan string)
+	go func() {
+		ch01 <- downloadImg("pic01")
+	}()
+	go func() {
+		ch02 <- downloadImg("pic01")
+	}()
+	go func() {
+		ch03 <- downloadImg("pic01")
+	}()
+	//使用select关键字监听每一个channel是否存在下载结果
+	select {
+	case result01 := <-ch01:
+		fmt.Println(result01)
+	case result02 := <-ch02:
+		fmt.Println(result02)
+	case result03 := <-ch03:
+		fmt.Println(result03)
+	}
+}
+
+func downloadImg(s string) string {
+	time.Sleep(2 * time.Second)
+	return s + "下载完毕"
+}
