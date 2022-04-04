@@ -31,7 +31,15 @@ func main02() {
 	fmt.Println("ch中接收到的值为：", str)
 }
 
-//有缓冲channel和无缓冲的channel:使用make创建的channel默认是无缓冲的，容量为0,不可以存储数据
+//有缓冲channel和无缓冲的channel:
+//无缓冲：使用make创建的channel默认是无缓冲的，容量为0,不可以存储数据。channel接收数据和发送数据是同时进行的，可以称之为同步channel。
+//有缓冲：make创建channel的时候同时指定容量.特点是先进先出，类似于队列。大小表示，最多可以存储5个int类型的对象
 func main() {
-
+	ch := make(chan int, 5)
+	//打印有缓冲channel的长度和容量
+	ch <- 5
+	ch <- 4
+	fmt.Println("当前有缓冲channel的大小为:", len(ch), ",容量为：", cap(ch))
 }
+
+//关闭channel:使用
