@@ -42,7 +42,21 @@ func main03() {
 	fmt.Println("当前有缓冲channel的大小为:", len(ch), ",容量为：", cap(ch))
 }
 
-//关闭channel:使用
+//关闭channel:如果channel已经关闭了，那么不允许向channel发送数据，否则会报异常。
 func main() {
+	ch := make(chan int, 5)
+	go func() {
+		ch <- 5
+		ch <- 4
+		time.Sleep(10 * time.Second)
+		close(ch)
+		ch <- 3 //出现异常
+	}()
+	for i := 0; i < 2; i++ {
+		v := <-ch //每次只能读取一个
+		fmt.Println(v)
+	}
 
 }
+
+//单向
