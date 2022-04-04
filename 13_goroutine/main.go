@@ -34,7 +34,7 @@ func main02() {
 //有缓冲channel和无缓冲的channel:
 //无缓冲：使用make创建的channel默认是无缓冲的，容量为0,不可以存储数据。channel接收数据和发送数据是同时进行的，可以称之为同步channel。
 //有缓冲：make创建channel的时候同时指定容量.特点是先进先出，类似于队列。大小表示，最多可以存储5个int类型的对象
-func main() {
+func main03() {
 	ch := make(chan int, 5)
 	//打印有缓冲channel的长度和容量
 	ch <- 5
@@ -43,3 +43,6 @@ func main() {
 }
 
 //关闭channel:使用
+func main() {
+
+}
