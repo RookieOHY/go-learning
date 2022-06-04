@@ -39,7 +39,7 @@ func main02() {
 
 /*③修改结构体的属性值*/
 /*----------------------------------*/
-func main() {
+func main03() {
 	p := person{name: "张三", age: 18}
 	modifyPerson(&p)
 	fmt.Println("person name:", p.name, ",age:", p.age)
@@ -53,4 +53,11 @@ func modifyPerson(p *person) {
 type person struct {
 	name string
 	age  int
+}
+
+/*④函数中值类型无法修改结构体对象的属性的原因
+
+：本质是结构体对象和函数形参的内存地址不同*/
+func main() {
+
 }
