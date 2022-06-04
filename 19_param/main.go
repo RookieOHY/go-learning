@@ -79,3 +79,5 @@ func modifyMap(personMap map[string]int) {
 	personMap["名字"] = 3
 	fmt.Printf("personMap地址为：%p\n", personMap)
 }
+
+/*⑥管道本质上也是，make函数返回的是指针变量*/
