@@ -55,7 +55,27 @@ type person struct {
 	age  int
 }
 
-/*④函数中值类型无法修改结构体对象的属性的原因：本质是结构体对象和函数形参的内存地址不同*/
-func main() {
+/*④函数中值类型无法修改结构体对象的属性的原因：
+本质是结构体对象和函数形参的内存地址不同，对于结构体的形参，本质上是原来的变量的拷贝，因此他们的内存地址是不一样
+虽然他们的属性和值一样。
+*/
+/*------------*/
 
+/*
+⑤使用map来表示一个对象。针对make或者是字面量来创建的map,本质上都会调用 src/runtime/map.go的makemap，
+该函数返回的是一个指针类型的变量*hmap。因此本质上make map返回的是*hmap。
+因此，无论是main函数还是modify函数，本质上使用的都是指针作为参数，导致修改行为是执行了的。
+*/
+func main() {
+	personMap := make(map[string]int)
+	personMap["名字"] = 1
+	personMap["年龄"] = 2
+	fmt.Printf("personMap地址为：%p\n", personMap)
+	modifyMap(personMap)
+	fmt.Println(personMap)
+
+}
+func modifyMap(personMap map[string]int) {
+	personMap["名字"] = 3
+	fmt.Printf("personMap地址为：%p\n", personMap)
 }
