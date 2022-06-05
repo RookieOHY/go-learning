@@ -1,3 +1,3 @@
 # go-learning
-Go语言每日学习
+Go每日学习
 - 基本知识
