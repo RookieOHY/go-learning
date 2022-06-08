@@ -82,7 +82,7 @@ func main04() {
 }
 
 /*⑤关于变量类型本身的反射，推荐使用reflect.Type()
-reflect.Type()和reflect.Value有所不同：前者是接口，后者是结构体。二者拥有一些相同的方法。
+reflect.Type和reflect.Value有所不同：前者是接口，后者是结构体。二者拥有一些相同的方法。
 */
 func main() {
 
