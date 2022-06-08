@@ -65,8 +65,10 @@ func main03() {
 哪些属于底层结构类型：
 	接口、结构体、指针
 	如p的底层类型是struct、&p的底层类型是指针
+使用Kind()方法来获取：
+	Kind方法返回Kind类型的常量
 */
-func main() {
+func main04() {
 	p := person{
 		Name: "ohy",
 		Age:  24,
@@ -77,4 +79,11 @@ func main() {
 	fmt.Println(pp.Kind())
 	//变量的底层类型
 	fmt.Println(pv.Kind())
+}
+
+/*⑤关于变量类型本身的反射，推荐使用reflect.Type()
+reflect.Type()和reflect.Value有所不同：前者是接口，后者是结构体。二者拥有一些相同的方法。
+*/
+func main() {
+
 }
