@@ -44,6 +44,10 @@ type person struct {
 	Age  int
 }
 
+func (p person) String() string {
+	return fmt.Sprintf("Name is %s,Age is %d", p.Name, p.Age)
+}
+
 func main03() {
 	//新建一个变量
 	p := person{
@@ -85,5 +89,30 @@ func main04() {
 reflect.Type和reflect.Value有所不同：前者是接口，后者是结构体。二者拥有一些相同的方法。
 */
 func main() {
-
+	p := person{
+		Name: "RookieOHY",
+		Age:  25,
+	}
+	//反射获取任意变量的类型
+	var a = 29
+	str := "我是字符串"
+	pt := reflect.TypeOf(p)
+	at := reflect.TypeOf(a)
+	strt := reflect.TypeOf(str)
+	fmt.Println("类型p：", pt)
+	fmt.Println("类型a：", at)
+	fmt.Println("类型str：", strt)
+	//获取person的属性以及方法
+	for i := 0; i < pt.NumField(); i++ {
+		fmt.Println("属性名字：", pt.Field(i).Name)
+		fmt.Println("属性类型：", pt.Field(i).Type)
+	}
+	for i := 0; i < pt.NumMethod(); i++ {
+		fmt.Println("方法名字：", pt.Method(i).Name)
+	}
+	//获取person中指定的方法
+	mn, flag := pt.MethodByName("String")
+	if flag == true {
+		fmt.Println("获取指定的方法名字成功! ", mn.Name)
+	}
 }
