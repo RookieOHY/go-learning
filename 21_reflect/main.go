@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"reflect"
 )
 
@@ -115,4 +116,11 @@ func main() {
 	if flag == true {
 		fmt.Println("获取指定的方法名字成功! ", mn.Name)
 	}
+	//判断是否实现了某一个接口（如判断person是否实现了fmt.Stringer 和 io.Writer）
+	//获取接口类型
+	st := reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
+	iot := reflect.TypeOf((*io.Writer)(nil)).Elem()
+	fmt.Println("person是否实现了Stringer接口：", pt.Implements(st))
+	fmt.Println("person是否实现了Writer接口：", pt.Implements(iot))
+
 }
