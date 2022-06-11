@@ -33,7 +33,7 @@ type person struct {
 }
 
 /*
-③反射获取结构体的struct tag 信息
+③反射获取结构体的struct tag 信息,让对应的字段可以实现json字符串和结构体对象之间的互相转换
 */
 func main() {
 	p := person{
