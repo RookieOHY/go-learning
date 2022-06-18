@@ -80,15 +80,3 @@ func main04() {
 	jsonBuilder.WriteString("}")
 	fmt.Println(jsonBuilder.String())
 }
-
-/*
-⑤利用反射来调用函数
-*/
-
-func (p person) print(str string) {
-	//fmt.Printf()
-}
-
-func main() {
-
-}
