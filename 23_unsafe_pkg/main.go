@@ -64,4 +64,10 @@ func main() {
 	fmt.Println(unsafe.Sizeof(int(64)))
 	fmt.Println(unsafe.Sizeof(int64(64)))
 	fmt.Println(unsafe.Sizeof(int8(64)))
+	strings := [1]string{"RookieOHY"}
+	strings2 := [2]string{"RookieOHY"}
+	//关于类型 数组长度不同 表示不同类型的字符串数组
+	fmt.Printf("%T", strings)
+	fmt.Printf("%T", strings2)
+
 }
