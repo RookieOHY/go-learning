@@ -35,3 +35,52 @@ func TestFibonacci(t *testing.T) {
 	}
 
 }
+
+/*
+	基准测试：
+		必须是BenchMark+函数名
+		一定导出的
+		被测试的代码逻辑要放在循环
+		无返回值
+	基准测试一些命令：
+		go test -bench=. 相对路径
+
+	结果分析：
+		-16 --> GOMAXPROCS 逻辑cpu的数量
+		1576354 --> for循环的次数
+		653.1 ns/op --> 每次循环花费的纳秒数
+		0 B/op --> 每次循环分配的内存(单位字节)
+		0 allocs/op --> 每次循环分配内存的次数
+
+
+*/
+func BenchmarkFibonacci(b *testing.B) {
+	//构建测试用例也是需要时间的，但是按理不应该算上
+	n := 10
+	//启用内存统计 计算每一次操作分配内存的次数和大小
+	b.ReportAllocs()
+	//使用重置定时器重置时间(还有StartTimer 和 StopTimer)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		Fibonacci(n)
+	}
+}
+
+/*
+并发基准测试
+	把n分配给多个goroutine并发执行
+*/
+
+func BenchmarkFibonacciRunConcurrent(b *testing.B) {
+	n := 10
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			Fibonacci(n)
+		}
+	})
+
+}
+
+/*
+注意点：编码-->单元测试-->覆盖率分析-->普通基准测试-->并发基准测试-->修改或者调整你的代码
+*/
