@@ -12,14 +12,60 @@ gin相关知识点：
 		引入包：import "github.com/gin-gonic/gin"
 	最基本的go服务：
 		由gin和其他基本库来构建
+	一些方法：
+		获取参数：
+			Param("key"):获取api参数
+			DefaultQuery("key","默认值"):获取?后面的参数值；获取不到或者没有传递，设置值为默认值。
 */
 func main() {
 	//gin.Default()函数默认会返回一个Engine指针。（路由的创建）
 	router := gin.Default()
 	//func (group *RouterGroup) GET(relativePath string, handlers ...HandlerFunc) IRoutes（HandlerFunc是func(*Context)的新定义。因此，下方handleType函数的入参类型应该为*Context）
 	router.GET("/", handleTypeMethod)
+	router.GET("/user/:uid", getUser)
+	router.GET("/user", getUser2)
 	//设置服务的运行端口（默认为8080，源码可参考utils.go下的resolveAddress函数）
 	router.Run(":9200")
+}
+
+//模拟查询用户2
+func getUser2(c *gin.Context) {
+	name := c.DefaultQuery("name", "bird bro")
+	u2 := user{
+		Id:   "2",
+		Name: "RookieOHY02",
+		Age:  25,
+	}
+	if name == u2.Name {
+		c.JSON(200, u2)
+	} else {
+		c.String(200, "你好! "+name)
+	}
+}
+
+//定义用户
+type user struct {
+	Id   string
+	Name string
+	Age  int
+}
+
+//模拟查询用户
+func getUser(c *gin.Context) {
+	//本质是遍历请求的每一个参数名字，如和uid匹配，返回对应key的value
+	uid := c.Param("uid")
+	u := user{
+		Id:   "1",
+		Name: "RookieOHY",
+		Age:  25,
+	}
+	if uid == u.Id {
+		c.JSON(200, u)
+	} else {
+		c.JSON(404, gin.H{
+			"message": uid + "对应的用户未注册~",
+		})
+	}
 }
 
 //入参*Context:表示Context的指针。而Context含义是一个上下文结构体（结构体是context包下context接口）。
