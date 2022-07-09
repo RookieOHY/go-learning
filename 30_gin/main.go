@@ -21,6 +21,7 @@ func main() {
 	//gin.Default()函数默认会返回一个Engine指针。（路由的创建）
 	router := gin.Default()
 	//func (group *RouterGroup) GET(relativePath string, handlers ...HandlerFunc) IRoutes（HandlerFunc是func(*Context)的新定义。因此，下方handleType函数的入参类型应该为*Context）
+	//参数：前者为请求映射的路径、后者为匿名函数或者为函数名
 	router.GET("/", handleTypeMethod)
 	router.GET("/user/:uid", getUser)
 	router.GET("/user", getUser2)
@@ -37,9 +38,9 @@ func getUser2(c *gin.Context) {
 		Age:  25,
 	}
 	if name == u2.Name {
-		c.JSON(200, u2)
+		c.JSON(http.StatusOK, u2)
 	} else {
-		c.String(200, "你好! "+name)
+		c.String(http.StatusOK, "你好! "+name)
 	}
 }
 
@@ -60,9 +61,10 @@ func getUser(c *gin.Context) {
 		Age:  25,
 	}
 	if uid == u.Id {
-		c.JSON(200, u)
+		c.JSON(http.StatusOK, u)
 	} else {
-		c.JSON(404, gin.H{
+		//gin.H 为新定义的类型。本质是：key为string类型、v为任意类型（空接口）的一个map
+		c.JSON(http.StatusNotFound, gin.H{
 			"message": uid + "对应的用户未注册~",
 		})
 	}
