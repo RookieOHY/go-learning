@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"path"
 )
 
 /*
@@ -23,16 +26,115 @@ gin相关知识点：
 			PostForm: 同get
 			DefaultPostForm：同get
 			GetPostForm: 同get
+		请求参数的对象绑定：
+			ShouldBind：支持json、普通参数，表单参数的对象绑定
+		重定向：
+			http重定向：c.Redirect()
+			路由：r.HandleContext(c)
+	本质上：使用gin,需要自己做一层封装
 */
 
 type userInfo struct {
-	Username string `json:"username" form:"username"`
-	Password string `json:"password" form:"password"`
+	Username string `json:"username" form:"username" binding:"required"`
+	Password string `json:"password" form:"password" binding:"required"`
+}
+
+/*gin的中间件*/
+func main06() {
+
+}
+
+/*gin路由和路由组*/
+func main() {
+	route := gin.Default()
+	route.Any("/testAny", testAny)
+	//设置空路由
+	route.NoRoute(testNoToute)
+	route.Run(":9200")
+	//路由组 todo
+	//路由组嵌套 todo
+}
+
+//404
+func testNoToute(c *gin.Context) {
+	c.JSON(http.StatusNotFound, gin.H{
+		"messgae": "404",
+	})
+}
+
+//测试
+func testAny(c *gin.Context) {
+	method := c.Request.Method
+	c.JSON(http.StatusOK, gin.H{
+		"message": "method type is" + method,
+	})
+}
+
+/*gin的请求转发和重定向*/
+func main05() {
+	route := gin.Default()
+	//http重定向
+	route.GET("/rookieohy", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "http://www.rookieohy.top")
+	})
+	//路由重定向
+	route.GET("/toTest2", func(c *gin.Context) {
+		c.Request.URL.Path = "/test2"
+		route.HandleContext(c)
+	})
+	route.GET("/test2", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "router is test2",
+		})
+	})
+	route.Run(":9200")
 }
 
 /*gin的文件上传*/
-func main() {
+func main04() {
+	route := gin.Default()
+	route.POST("/upload", uploadFile)
+	route.POST("/multiUpload", uploadFiles)
 
+	route.Run(":9200")
+}
+
+//测试文件的上传2
+func uploadFiles(c *gin.Context) {
+	//获取表单对象
+	form, _ := c.MultipartForm()
+	//获取多个文件对象
+	files := form.File["files"]
+	//遍历保存
+	for _, file := range files { //取files中的所有图片
+		dest := path.Join("C:/upload/", file.Filename) //保存路径
+		c.SaveUploadedFile(file, dest)
+	}
+	c.JSON(200, gin.H{
+		"message": "save files success",
+	})
+
+}
+
+//测试文件的上传
+func uploadFile(c *gin.Context) {
+	//获取单个文件
+	file, err := c.FormFile("simpleFile")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "upload file error",
+		})
+		return
+	} else {
+		//保存至某一个目录
+		log.Println(file.Filename)
+		//不会自动创建目录
+		dir := fmt.Sprintf("C:/upload/%s", file.Filename)
+		c.SaveUploadedFile(file, dir)
+		c.JSON(http.StatusOK, gin.H{
+			"message": "upload file success",
+		})
+	}
 }
 
 /*gin的参数绑定(绑定表单和绑定json)*/
@@ -40,7 +142,6 @@ func main03() {
 	router := gin.Default()
 	router.POST("/testBind", testBind)
 	router.Run(":9200")
-
 }
 
 //测试参数的绑定
