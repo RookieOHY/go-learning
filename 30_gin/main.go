@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"path"
+	"time"
 )
 
 /*
@@ -31,6 +32,9 @@ gin相关知识点：
 		重定向：
 			http重定向：c.Redirect()
 			路由：r.HandleContext(c)
+		中间件：
+			在处理逻辑前面和后面的逻辑，都归为一个组件->中间件处理。
+				如：鉴权、分页、业务耗时、记录日志。
 	本质上：使用gin,需要自己做一层封装
 */
 
@@ -40,19 +44,95 @@ type userInfo struct {
 }
 
 /*gin的中间件*/
-func main06() {
+func main() {
+	//全局使用start
+	//不使用默认的中间件Logger和Recovery
+	route := gin.New()
+	//route.Use(StatCost())
+	//route.GET("/testGet", func(c *gin.Context) {
+	//	c.JSON(http.StatusOK,gin.H{
+	//		"message":"test middleware successful",
+	//	})
+	//})
+	//全局使用end
+	//局部使用start
+	//route.GET("/testGet2",StatCost(), func(c *gin.Context) {
+	//	name:=c.MustGet("name")
+	//	c.JSON(http.StatusOK,gin.H{
+	//		"message":name,
+	//	})
+	//})
+	//局部使用end
 
+	//路由组注册中间件
+	testGroup := route.Group("/testRouteGroup")
+	testGroup.Use(StatCost())
+	{
+		testGroup.GET("/v1", func(c *gin.Context) {
+			c.JSON(http.StatusOK, c.MustGet("name"))
+		})
+	}
+
+	route.Run(":9200")
+}
+
+// StatCost 定义计算业务执行时间的中间件
+func StatCost() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		start := time.Now()
+		context.Set("name", "RookieOHY")
+		//放行执行请求
+		context.Next()
+		//获取结束时间
+		cost := time.Since(start)
+		//打印耗时
+		log.Println(cost)
+	}
 }
 
 /*gin路由和路由组*/
-func main() {
+func main06() {
 	route := gin.Default()
 	route.Any("/testAny", testAny)
 	//设置空路由
 	route.NoRoute(testNoToute)
+	//路由组
+	v1 := route.Group("/v1")
+	{
+		v1.GET("/add", func(c *gin.Context) {
+			//对应的业务
+			c.JSON(http.StatusOK, gin.H{
+				"message": "add success!",
+			})
+		})
+		v1.GET("/add2", func(c *gin.Context) {
+			//对应的业务
+			c.JSON(http.StatusOK, gin.H{
+				"message": "add2 success!",
+			})
+		})
+		v1.GET("/add3", func(c *gin.Context) {
+			//对应的业务
+			c.JSON(http.StatusOK, gin.H{
+				"message": "add3 success!",
+			})
+		})
+	}
+	//路由组嵌套
+	userGroup := route.Group("/user")
+	{
+		userGroup.GET("/getById", nil)
+		userGroup.GET("/update", nil)
+		//嵌套
+		run := userGroup.Group("/run")
+		{
+			run.GET("/withXx01", nil)
+			run.GET("/withXx02", nil)
+
+		}
+	}
+
 	route.Run(":9200")
-	//路由组 todo
-	//路由组嵌套 todo
 }
 
 //404
