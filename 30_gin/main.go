@@ -29,6 +29,8 @@ gin相关知识点：
 			GetPostForm: 同get
 		请求参数的对象绑定：
 			ShouldBind：支持json、普通参数，表单参数的对象绑定
+		文件上传：
+			默认单个文件的大小为32<<20等于32M
 		重定向：
 			http重定向：c.Redirect()
 			路由：r.HandleContext(c)
@@ -43,7 +45,7 @@ type userInfo struct {
 	Password string `json:"password" form:"password" binding:"required"`
 }
 
-/*gin的中间件*/
+/*⑦gin的中间件*/
 func main() {
 	//全局使用start
 	//不使用默认的中间件Logger和Recovery
@@ -90,7 +92,7 @@ func StatCost() gin.HandlerFunc {
 	}
 }
 
-/*gin路由和路由组*/
+/*⑥gin路由和路由组*/
 func main06() {
 	route := gin.Default()
 	route.Any("/testAny", testAny)
@@ -150,7 +152,7 @@ func testAny(c *gin.Context) {
 	})
 }
 
-/*gin的请求转发和重定向*/
+/*⑤gin的请求转发和重定向*/
 func main05() {
 	route := gin.Default()
 	//http重定向
@@ -170,12 +172,11 @@ func main05() {
 	route.Run(":9200")
 }
 
-/*gin的文件上传*/
+/*④gin的文件上传*/
 func main04() {
 	route := gin.Default()
 	route.POST("/upload", uploadFile)
 	route.POST("/multiUpload", uploadFiles)
-
 	route.Run(":9200")
 }
 
@@ -217,7 +218,7 @@ func uploadFile(c *gin.Context) {
 	}
 }
 
-/*gin的参数绑定(绑定表单和绑定json)*/
+/*③gin的参数绑定(绑定表单和绑定json)*/
 func main03() {
 	router := gin.Default()
 	router.POST("/testBind", testBind)
@@ -233,7 +234,7 @@ func testBind(c *gin.Context) {
 	}
 }
 
-/*post请求demo*/
+/*②gin的post请求demo*/
 func main02() {
 	router := gin.Default()
 	router.POST("/login", login)
@@ -258,7 +259,7 @@ func login(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
-/*get请求demo*/
+/*①gin最基本的demo*/
 func main01() {
 	//gin.Default()函数默认会返回一个Engine指针。（路由的创建）
 	router := gin.Default()
