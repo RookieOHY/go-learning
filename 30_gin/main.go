@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go-learning/30_gin/app/shop"
+	"go-learning/30_gin/app/users"
+	"go-learning/30_gin/router"
 	"log"
 	"net/http"
 	"path"
@@ -37,16 +40,103 @@ gin相关知识点：
 		中间件：
 			在处理逻辑前面和后面的逻辑，都归为一个组件->中间件处理。
 				如：鉴权、分页、业务耗时、记录日志。
+		大型项目的路由拆分：
+			简单的文件或者包
+			按照业务拆分：如xx01.go,xx02.go。其中的路由注册和处理方法都写在一个xx.go文件中。
+			更加细致的业务拆分：如shop目录下router.go 和 handler.go分别表示shop业务的路由注册和处理方法。
 	本质上：使用gin,需要自己做一层封装
 */
 
 type userInfo struct {
-	Username string `json:"username" form:"username" binding:"required"`
-	Password string `json:"password" form:"password" binding:"required"`
+	//关于binding:required:表示这是一个必填字段，如果不传，或者为空，会报错
+	Username string `json:"usernameJ" form:"usernameF" uri:"usernameU" binding:"required"`
+	Password string `json:"passwordJ" form:"passwordF" uri:"passwordU" binding:"required"`
+}
+
+/*G.gin源码解读分析*/
+
+/*F.gin+casbin实现权限管理*/
+
+/*E.gin解析token*/
+
+/*D.gin生成验证码*/
+
+/*C.gin+air实现代码的实时加载*/
+
+/*B.gin的日志文件输出控制台、文件*/
+
+/*A.gin的参数校验*/
+
+/*⑩gin操作session和cookie*/
+func main() {
+	// 1.创建路由
+	// 默认使用了2个中间件Logger(), Recovery()
+	r := gin.Default()
+	// 服务端要给客户端cookie
+	r.GET("cookie", func(c *gin.Context) {
+		// 获取客户端是否携带cookie
+		cookie, err := c.Cookie("key_cookie")
+		if err != nil {
+			cookie = "NotSet"
+			// 给客户端设置cookie
+			//  maxAge int, 单位为秒
+			// path,cookie所在目录
+			// domain string,域名
+			//   secure 是否智能通过https访问
+			// httpOnly bool  是否允许别人通过js获取自己的cookie
+			c.SetCookie("key_cookie", "value_cookie", 60, "/",
+				"localhost", false, true)
+		}
+		fmt.Printf("cookie的值是： %s\n", cookie)
+	})
+	r.Run(":9200")
+}
+
+/*⑨gin的同步和异步*/
+func main09() {
+	r := gin.Default()
+	//使用goroutine异步处理
+	r.GET("/testAsync", func(c *gin.Context) {
+		//不能使用原来的上下文对象，而是需要对应的副本
+		cpCtx := c.Copy()
+		go func() {
+			time.Sleep(3 * time.Second)
+			log.Println("异步执行：" + cpCtx.Request.URL.Path)
+		}()
+	})
+	//同步
+	r.GET("/testSync", func(c *gin.Context) {
+		time.Sleep(3 * time.Second)
+		log.Println("同步执行：" + c.Request.URL.Path)
+	})
+
+	r.Run(":9200")
+}
+
+/*⑧gin的路由封装*/
+func main08() {
+
+	//1.所有的路由和方法都定义在一个routers.go文件汇总
+	//route := router.SetUpRoute()
+	//if route != nil {
+	//	fmt.Printf("测试路由的封装~")
+	//}
+
+	//2.按照业务区分为一个一个.go文件
+	//engine := gin.Default()
+	//router.LoadUsers(engine)
+	//router.LoadShop(engine)
+
+	//3.一个业务对应一个目录
+	// 加载多个APP的路由配置
+	router.Include(shop.Routers, users.Routers)
+	// 初始化路由
+	r := router.Init()
+	r.Run(":9200")
 }
 
 /*⑦gin的中间件*/
-func main() {
+func main07() {
 	//全局使用start
 	//不使用默认的中间件Logger和Recovery
 	route := gin.New()
@@ -121,7 +211,7 @@ func main06() {
 		})
 	}
 	//路由组嵌套
-	userGroup := route.Group("/user")
+	userGroup := route.Group("/users")
 	{
 		userGroup.GET("/getById", nil)
 		userGroup.GET("/update", nil)
@@ -222,13 +312,28 @@ func uploadFile(c *gin.Context) {
 func main03() {
 	router := gin.Default()
 	router.POST("/testBind", testBind)
+	router.GET("/testBindUri/:usernameU/:passwordU", testBindUri)
 	router.Run(":9200")
+}
+
+//测试参数的绑定2
+func testBindUri(c *gin.Context) {
+	var userInfo userInfo
+	err := c.ShouldBindUri(&userInfo)
+	if err == nil {
+		c.JSON(http.StatusOK, userInfo)
+	}
 }
 
 //测试参数的绑定
 func testBind(c *gin.Context) {
 	var userInfo userInfo
-	err := c.ShouldBind(&userInfo)
+	//可以绑定任意类型
+	//err := c.ShouldBind(&userInfo)
+	//绑定json
+	//err := c.ShouldBindJSON(&userInfo)
+	//绑定form
+	err := c.Bind(&userInfo)
 	if err == nil {
 		c.JSON(http.StatusOK, userInfo)
 	}
@@ -274,8 +379,8 @@ func main01() {
 	//func (group *RouterGroup) GET(relativePath string, handlers ...HandlerFunc) IRoutes（HandlerFunc是func(*Context)的新定义。因此，下方handleType函数的入参类型应该为*Context）
 	//参数：前者为请求映射的路径、后者为匿名函数或者为函数名
 	router.GET("/", handleTypeMethod)
-	router.GET("/user/:uid", getUser)
-	router.GET("/user", getUser2)
+	router.GET("/users/:uid", getUser)
+	router.GET("/users", getUser2)
 	//加载一些静态的资源
 	//router.LoadHTMLGlob("templates/**/*")
 	//转发到某一模板
