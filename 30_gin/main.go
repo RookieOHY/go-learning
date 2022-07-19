@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	"go-learning/30_gin/app/shop"
 	"go-learning/30_gin/app/users"
 	"go-learning/30_gin/router"
@@ -66,9 +67,102 @@ type userInfo struct {
 /*B.gin的日志文件输出控制台、文件*/
 
 /*A.gin的参数校验*/
-
-/*⑩gin操作session和cookie*/
 func main() {
+
+}
+
+/*⑫原生的http包操作session(多个http请求之间的关系)*/
+//初始化一个存储cookie的对象
+var cookieStore = sessions.NewCookieStore([]byte("00000000"))
+
+func main12() {
+	http.HandleFunc("/save", saveSession)
+	http.HandleFunc("/get", getSession)
+	http.HandleFunc("/delete", deleteSession)
+	http.ListenAndServe(":9200", nil)
+}
+
+//删除session
+func deleteSession(writer http.ResponseWriter, request *http.Request) {
+	session, err := cookieStore.Get(request, "sessionName")
+	if err != nil {
+		log.Println("获取session失败")
+		return
+	}
+	//删除：将session中数据的最大存储时间设置为小于0
+	session.Options.MaxAge = -1
+	session.Save(request, writer)
+}
+
+//获取session
+func getSession(writer http.ResponseWriter, request *http.Request) {
+	session, err := cookieStore.Get(request, "sessionName")
+	if err != nil {
+		log.Println("获取session失败")
+		return
+	}
+	//取值
+	name := session.Values["name"]
+	log.Println("获取到的name为{}", name)
+}
+
+//设置session
+func saveSession(writer http.ResponseWriter, request *http.Request) {
+	session, err := cookieStore.Get(request, "sessionName")
+	if err != nil {
+		log.Println("生成session失败")
+		return
+	}
+	//存数据
+	session.Values["name"] = "RookieOHY"
+	//保存
+	session.Save(request, writer)
+}
+
+/*⑪基于cookie实现页面权限的控制*/
+func main11() {
+	r := gin.Default()
+	//注册2个路由
+	r.GET("/login", testLogin)
+	r.GET("/home", AuthMiddleWare(), testHome)
+	//端口
+	r.Run(":9200")
+}
+
+//AuthMiddleWare 页面需要鉴权
+func AuthMiddleWare() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		cookie, _ := context.Cookie("cookie")
+		if cookie == "RookieOHY" {
+			//放行，执行路由对应的方法
+			context.Next()
+			log.Println("有权限访问home")
+			return
+		}
+		//不等于RookieOHY,报错：无权限访问home
+		context.JSON(http.StatusUnauthorized, gin.H{
+			"message": "无权访问home",
+		})
+		//不放行
+		context.Abort()
+		log.Println("无权限访问home")
+	}
+}
+
+func testHome(context *gin.Context) {
+	context.JSON(200, "this is home page")
+}
+
+func testLogin(context *gin.Context) {
+	//设置cookie
+	context.SetCookie("cookie", "RookieOHY", 60, "/",
+		"localhost", false, true)
+	// 返回信息
+	context.JSON(200, "this is login page")
+}
+
+/*⑩gin操作cookie*/
+func main10() {
 	// 1.创建路由
 	// 默认使用了2个中间件Logger(), Recovery()
 	r := gin.Default()
