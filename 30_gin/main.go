@@ -7,8 +7,10 @@ import (
 	"go-learning/30_gin/app/shop"
 	"go-learning/30_gin/app/users"
 	"go-learning/30_gin/router"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"path"
 	"time"
 )
@@ -54,21 +56,51 @@ type userInfo struct {
 	Password string `json:"passwordJ" form:"passwordF" uri:"passwordU" binding:"required"`
 }
 
-/*G.gin源码解读分析*/
+/*F.gin源码解读分析*/
 
-/*F.gin+casbin实现权限管理*/
+/*E.gin+casbin实现权限管理*/
 
-/*E.gin解析token*/
+/*D.gin解析token*/
 
-/*D.gin生成验证码*/
-
-/*C.gin+air实现代码的实时加载*/
-
-/*B.gin的日志文件输出控制台、文件*/
-
-/*A.gin的参数校验*/
+/*C.gin生成验证码*/
 func main() {
 
+}
+
+/*B.gin的日志文件输出控制台、文件*/
+func mainB() {
+	gin.DisableConsoleColor()
+	// Logging to a file.
+	f, _ := os.Create("gin.log")
+	gin.DefaultWriter = io.MultiWriter(f)
+
+	// 如果需要同时将日志写入文件和控制台，请使用以下代码。
+	//gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+		c.String(200, "pong")
+	})
+	r.Run()
+}
+
+type RookieOHY struct {
+	Age      int       `form:"age" binding:"required,gt=10"`
+	Name     string    `form:"name" binding:"required"`
+	Birthday time.Time `form:"birthday" time_format:"2006-01-02" time_utc:"1"`
+}
+
+/*A.gin的结构体数据校验*/
+func mainA() {
+	engine := gin.Default()
+	engine.GET("/ohy", func(ctx *gin.Context) {
+		var rookieohy RookieOHY
+		if err := ctx.ShouldBind(&rookieohy); err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, rookieohy)
+	})
+	engine.Run(":9200")
 }
 
 /*⑫原生的http包操作session(多个http请求之间的关系)*/

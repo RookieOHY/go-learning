@@ -3,6 +3,7 @@ module go-learning
 go 1.17
 
 require (
+	github.com/dchest/captcha v1.0.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/gorilla/sessions v1.2.1
 	golang.org/x/example v0.0.0-20220304235025-ad95e7f791d8
@@ -24,7 +25,7 @@ require (
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	golang.org/x/net v0.0.0-20220630215102-69896b714898 // indirect
-	golang.org/x/sys v0.0.0-20220704084225-05e143d24a9e // indirect
+	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
