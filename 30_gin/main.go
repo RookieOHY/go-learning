@@ -2,7 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/casbin/casbin"
+	xormadapter "github.com/casbin/xorm-adapter"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
 	"go-learning/30_gin/app/shop"
 	"go-learning/30_gin/app/users"
@@ -56,15 +60,160 @@ type userInfo struct {
 	Password string `json:"passwordJ" form:"passwordF" uri:"passwordU" binding:"required"`
 }
 
-/*F.gin源码解读分析*/
-
-/*E.gin+casbin实现权限管理*/
-
-/*D.gin解析token*/
-
-/*C.gin生成验证码*/
+/*E.gin源码解读分析*/
 func main() {
+	r := gin.Default()
+	r.GET("/gin", func(context *gin.Context) {
+		context.JSON(200, "gin简单源码走读")
+	})
+	r.Run(":9200")
+}
 
+/*D.gin+casbin实现权限管理*/
+func mainD() {
+	adapter := xormadapter.NewAdapter("mysql", "root:root12#$@tcp(127.0.0.1:3306)/01-goblog?charset=utf8", true)
+	if adapter == nil {
+		log.Println("连接数据库错误")
+		return
+	}
+	//加载权限配置文件
+	enforcer := casbin.NewEnforcer("./rbac_models.conf")
+	if enforcer == nil {
+		log.Println("初始化casbin错误")
+	}
+	//读取数据库中的策略
+	enforcer.LoadPolicy()
+	//新建路由对象
+	r := gin.New()
+
+	//policy[策略]的增加 删除 查询
+	//add
+	r.POST("/api/v1/add", func(ctx *gin.Context) {
+		log.Println("策略的新增...")
+		exist := enforcer.AddPolicy("admin", "/api/v1/hello", "GET")
+		if exist {
+			log.Println("新增策略成功")
+		} else {
+			log.Println("策略已存在")
+		}
+	})
+	//delete
+	r.DELETE("/api/v1/delete", func(ctx *gin.Context) {
+		log.Println("策略的删除")
+		success := enforcer.RemovePolicy("admin", "/api/v1/hello", "GET")
+		if success {
+			log.Println("删除策略成功")
+		} else {
+			log.Println("策略不存在")
+		}
+	})
+	//get
+	r.GET("/api/v1/get", func(ctx *gin.Context) {
+		log.Println("策略的查询")
+		policies := enforcer.GetPolicy() //二维字符串数组
+		for _, vlist := range policies {
+			for _, v := range vlist {
+				fmt.Printf("value: %s, ", v) //值以utf8输出 不支持utf8的话 会乱码
+			}
+		}
+	})
+	//使用认证中间件（拿到请求三要素：obj-uri;act-method;sub-角色。之后拿三要素匹配对应的配置。通过：放行；不通过：拦截）
+	r.Use(Authorize(enforcer))
+	//测试URL
+	r.GET("/api/v1/hello", func(ctx *gin.Context) {
+		fmt.Println("hello RookieOHY")
+	})
+	r.Run(":9200")
+}
+
+func Authorize(enforcer *casbin.Enforcer) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		//三要素获取
+		obj := ctx.Request.URL.RequestURI()
+		act := ctx.Request.Method
+		sub := "admin"
+
+		//匹配是否存在
+		ok := enforcer.Enforce(sub, obj, act)
+		if ok {
+			log.Println("admin可以执行访问/hello")
+			ctx.Next()
+		} else {
+			log.Println("admin无权限访问/hello")
+			ctx.Abort()
+		}
+	}
+}
+
+/*C.gin生成token与解析token*/
+
+var jwtkey = []byte("RookieOHY")
+var tokenString string
+
+type Claims struct {
+	UserId uint
+	jwt.StandardClaims
+}
+
+func mainC() {
+	r := gin.Default()
+	//生成token
+	r.GET("/setToken", func(context *gin.Context) {
+		//有效时间
+		expireTime := time.Now().Add(7 * 24 * time.Hour)
+		c := &Claims{
+			UserId: 2,
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: expireTime.Unix(), //过期时间
+				IssuedAt:  time.Now().Unix(),
+				Issuer:    "127.0.0.1",  //签名颁发者
+				Subject:   "user token", //签名主题
+			},
+		}
+		//生成token
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+		//log.Println(token)
+		//加入签名
+		tokenStr, err := token.SignedString(jwtkey)
+		if err != nil {
+			fmt.Println(err)
+		}
+		tokenString = tokenStr
+		//响应
+		context.JSON(200, gin.H{"token": tokenString})
+	})
+	//解析token
+	r.GET("/getToken", func(context *gin.Context) {
+		//获取token
+		tokenStr := context.GetHeader("Authorization")
+		//校验
+		if tokenStr == "" {
+			context.JSON(401, gin.H{"errorMsg": "权限不足"})
+			context.Abort() //拦截
+			return
+		}
+		//解析
+		token, clains, e := ParseToken(tokenStr)
+		if e != nil || !token.Valid {
+			context.JSON(401, gin.H{"errorMsg": "解析token错误或token非法"})
+			context.Abort()
+			return
+		}
+		fmt.Println(clains.UserId) //是否为2？
+	})
+	r.Run(":9200")
+}
+
+// ParseToken 解析
+func ParseToken(tokenStr string) (*jwt.Token, *Claims, error) {
+	claims := &Claims{}
+	//实际的解析
+	token, err := jwt.ParseWithClaims(tokenStr, claims, jwtKeyFuncTest)
+	return token, claims, err
+}
+
+func jwtKeyFuncTest(token *jwt.Token) (interface{}, error) {
+	return jwtkey, nil
 }
 
 /*B.gin的日志文件输出控制台、文件*/
