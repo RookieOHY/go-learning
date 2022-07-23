@@ -60,15 +60,6 @@ type userInfo struct {
 	Password string `json:"passwordJ" form:"passwordF" uri:"passwordU" binding:"required"`
 }
 
-/*E.gin源码解读分析*/
-func main() {
-	r := gin.Default()
-	r.GET("/gin", func(context *gin.Context) {
-		context.JSON(200, "gin简单源码走读")
-	})
-	r.Run(":9200")
-}
-
 /*D.gin+casbin实现权限管理*/
 func mainD() {
 	adapter := xormadapter.NewAdapter("mysql", "root:root12#$@tcp(127.0.0.1:3306)/01-goblog?charset=utf8", true)
