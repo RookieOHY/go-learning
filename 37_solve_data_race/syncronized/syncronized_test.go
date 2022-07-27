@@ -12,5 +12,7 @@ func TestMutex(t *testing.T) {
 	Mutex()
 }
 func TestOnce(t *testing.T) {
-	Once()
+	for i := 0; i < 100; i++ {
+		Once()
+	}
 }
