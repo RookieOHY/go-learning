@@ -17,20 +17,22 @@ func ContextWithCancel() {
 	fmt.Println(ctx)
 
 	wg := &sync.WaitGroup{}
-	wg.Add(2)
-	//4s后主动关闭（公用同一个上下文）
+	wg.Add(1)
+	//5s后主动关闭（公用同一个上下文）
 	go func(context.Context, *sync.WaitGroup) {
 		for {
 			select {
 			case <-ctx.Done():
 				wg.Done()
 				fmt.Println("monitor1 listen ctx done")
-			case <-time.After(4 * time.Second):
+				return
+			case <-time.After(5 * time.Second):
 				fmt.Println("monitor being do cancel")
 				cancel()
 			}
 		}
 	}(ctx, wg)
+	wg.Add(1)
 	//被动关闭
 	go func(context.Context, *sync.WaitGroup) {
 		index := 0

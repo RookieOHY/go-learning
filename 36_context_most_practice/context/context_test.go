@@ -4,5 +4,7 @@ import "testing"
 
 //测试
 func TestContextWithCancel(t *testing.T) {
-	ContextWithCancel()
+	for i := 0; i < 5; i++ {
+		ContextWithCancel()
+	}
 }
