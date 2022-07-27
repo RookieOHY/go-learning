@@ -52,3 +52,33 @@ func SafeAdd() {
 }
 
 //使用互斥锁
+func Mutex() {
+	var number int = 0
+	//新建锁
+	mutex := new(sync.Mutex)
+	w := new(sync.WaitGroup)
+	w.Add(2)
+	//只有两个协程
+	go func() {
+		defer w.Done()
+		for i := 0; i < 1000; i++ {
+			fmt.Println("t1 run add")
+			mutex.Lock()
+			number = number + 1
+			mutex.Unlock()
+		}
+	}()
+
+	go func() {
+		defer w.Done()
+		for i := 0; i < 1000; i++ {
+			fmt.Println("t2 run minus")
+			mutex.Lock()
+			number = number - 1
+			mutex.Unlock()
+		}
+	}()
+
+	w.Wait()
+	fmt.Println(number)
+}

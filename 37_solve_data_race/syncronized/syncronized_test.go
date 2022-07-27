@@ -8,3 +8,6 @@ func TestUnsafeAdd(t *testing.T) {
 func TestSafeAdd(t *testing.T) {
 	SafeAdd()
 }
+func TestMutex(t *testing.T) {
+	Mutex()
+}
