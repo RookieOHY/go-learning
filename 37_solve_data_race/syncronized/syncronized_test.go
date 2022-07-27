@@ -11,3 +11,6 @@ func TestSafeAdd(t *testing.T) {
 func TestMutex(t *testing.T) {
 	Mutex()
 }
+func TestOnce(t *testing.T) {
+	Once()
+}

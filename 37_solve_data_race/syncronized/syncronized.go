@@ -82,3 +82,24 @@ func Mutex() {
 	w.Wait()
 	fmt.Println(number)
 }
+
+//只有一个协程可以执行成功 多用初始化操作（如初始化数据库连接）
+func Once() {
+	once := new(sync.Once)
+	wg := new(sync.WaitGroup)
+
+	wg.Add(5)
+
+	for i := 0; i < 5; i++ {
+		tmp := i
+		go func() {
+			defer wg.Done()
+			//fmt.Println(tmp)
+			once.Do(func() {
+				fmt.Println(tmp)
+			})
+		}()
+	}
+
+	wg.Wait()
+}
