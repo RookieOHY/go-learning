@@ -74,8 +74,8 @@ func initConnection() (db *gorm.DB, err error) {
 func QueryWithCondition() {
 	db, err := initConnection()
 	if err == nil {
-		var md Model
-
+		//var md Model
+		var mds []Model
 		//id主键查询（若查询不到返回一个nil model）
 		//dbptr :=db.Model(&Model{}).Find(&md,13)
 		//dbptr :=db.Model(&Model{}).First(&md,19)
@@ -83,9 +83,21 @@ func QueryWithCondition() {
 		//where条件查询（按表字段、按结构体属性、按照map）
 		//dbptr:=db.Where("name=? and age=?","RookieOHY03",0).Find(&md)
 		//dbptr:=db.Where(Model{Name:"RookieOHY03",Age: 0}).Find(&md)
-		dbptr := db.Where(map[string]interface{}{
-			"name": "RookieOHY03", "age": 0,
-		}).Find(&md)
+		//dbptr := db.Where(map[string]interface{}{
+		//	"name": "RookieOHY03", "age": 0,
+		//}).Find(&md)
+
+		//or not order 等连接条件的使用
+		//dbptr:=db.Where("name=?","RookieOHY03").Or("age",1).Find(&md)
+		//dbptr:=db.Where("name=?","RookieOHY03").Not("age",1).Find(&md)
+		//dbptr:=db.Order("rookie_uuid asc").Find(&mds)
+
+		//内联（代替where）(按照表字段、按照map、按照结构体)
+		//dbptr := db.Find(&mds, "age = ?", 0)
+		//dbptr := db.Find(&mds, map[string]interface{}{"age":0})
+		dbptr := db.Find(&mds, Model{Age: 0})
+
+		//Select(获取结果指定字段)
 
 		if dbptr.Error != nil {
 			//打印错误
@@ -93,7 +105,7 @@ func QueryWithCondition() {
 			//判断错误的类型是否已存在的错误类型
 			fmt.Println(errors.Is(dbptr.Error, gorm.ErrRecordNotFound))
 		} else {
-			fmt.Println(md)
+			fmt.Println(mds)
 		}
 	}
 }
