@@ -11,3 +11,10 @@ func TestQuery(t *testing.T) {
 func TestQueryWithCondition(t *testing.T) {
 	QueryWithCondition()
 }
+func TestUpdate(t *testing.T) {
+	Update()
+}
+
+func TestDelete(t *testing.T) {
+	Delete()
+}

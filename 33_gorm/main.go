@@ -32,6 +32,11 @@ import (
 	"time"
 )
 
+type UserInfo struct {
+	Name string
+	Age  uint8
+}
+
 type EmbedModel struct {
 	UUID  uint       `gorm:"primaryKey;type:int(11) auto_increment;not null;unique;;comment:自增id"`
 	Time1 *time.Time `gorm:"type:datetime;column:create_time;comment:创建时间"`
@@ -71,11 +76,56 @@ func initConnection() (db *gorm.DB, err error) {
 }
 
 /*CRUD*/
+func Delete() {
+	db, _ := initConnection()
+	//实体类主键删除
+	//model := Model{EmbedModel: EmbedModel{UUID: 13}}
+	//dbptr := db.Delete(&model)
+
+	//按照整形主键删除
+	//dbptr:=db.Delete(&Model{},16)
+
+	//批量删除（条件是非主属性，如果匹配，将会对所有匹配的记录做删除）
+	//dbptr:=db.Where("name like ?","%o%").Delete(&Model{})
+	dbptr := db.Delete(&Model{}, "name like ?", "%o%")
+	if dbptr.Error == nil {
+		fmt.Println("删除成功")
+	} else {
+		fmt.Println("发生的错误为", dbptr.Error)
+	}
+}
+
+func Update() {
+	db, err := initConnection()
+	if err == nil {
+		//var mds []Model
+		var md Model
+		//update 仅更新选择的字段
+		//dbptr:=db.Model(&Model{}).Where("rookie_uuid = ?",14).Update("name","RookieOHY2")
+
+		//save 无条件更新（默认更具主键来执行更新）
+		//db.Model(&Model{}).Where("name like ?","%RookieOHY%").Find(&mds)
+		//for k, _ := range mds {
+		//	mds[k].Age = 99
+		//}
+		//dbptr:=db.Save(&mds)
+
+		//updates (指定map更新、指定结构体更新（0值不参与更新）)
+		//dbptr:=db.First(&md).Updates(&Model{Name:"xxx",Age: 0})
+		dbptr := db.First(&md).Updates(map[string]interface{}{"name": "RookieOHY", "Age": 0})
+		if dbptr.Error != nil {
+			fmt.Println("发生的错误为", dbptr.Error) //record not found
+			fmt.Println(errors.Is(dbptr.Error, gorm.ErrRecordNotFound))
+		}
+	}
+}
+
 func QueryWithCondition() {
 	db, err := initConnection()
 	if err == nil {
 		//var md Model
-		var mds []Model
+		//var mds []Model
+		var mfs []UserInfo
 		//id主键查询（若查询不到返回一个nil model）
 		//dbptr :=db.Model(&Model{}).Find(&md,13)
 		//dbptr :=db.Model(&Model{}).First(&md,19)
@@ -95,9 +145,13 @@ func QueryWithCondition() {
 		//内联（代替where）(按照表字段、按照map、按照结构体)
 		//dbptr := db.Find(&mds, "age = ?", 0)
 		//dbptr := db.Find(&mds, map[string]interface{}{"age":0})
-		dbptr := db.Find(&mds, Model{Age: 0})
+		//dbptr := db.Find(&mds, Model{Age: 0})
 
-		//Select(获取结果指定字段)
+		//Select(按照指定表字段、按照数组)
+		//dbptr:=db.Select("name","age").Find(&mds)
+		//dbptr:=db.Select([]string{"name","age"}).Find(&mds)
+
+		dbptr := db.Model(&Model{}).Find(&mfs)
 
 		if dbptr.Error != nil {
 			//打印错误
@@ -105,7 +159,9 @@ func QueryWithCondition() {
 			//判断错误的类型是否已存在的错误类型
 			fmt.Println(errors.Is(dbptr.Error, gorm.ErrRecordNotFound))
 		} else {
-			fmt.Println(mds)
+			//fmt.Println(md)
+			//fmt.Println(mds)
+			fmt.Println(mfs)
 		}
 	}
 }
