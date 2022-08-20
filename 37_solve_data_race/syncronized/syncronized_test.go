@@ -12,7 +12,11 @@ func TestMutex(t *testing.T) {
 	Mutex()
 }
 func TestOnce(t *testing.T) {
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 5; i++ {
 		Once()
 	}
+}
+
+func TestSyncCondAtConsumerProducer(t *testing.T) {
+	ProduceAndConsumerSimulationWithSyncCond()
 }
