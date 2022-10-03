@@ -23,7 +23,7 @@ func PanicSimulate(key int) {
 
 //启用3个协程
 func runRoutines() {
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 10; i++ {
 		go PanicSimulate(i)
 	}
 	for {
