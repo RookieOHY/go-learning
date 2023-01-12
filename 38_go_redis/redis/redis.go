@@ -102,3 +102,77 @@ func GetJsonWithUnmarshal() {
 	fmt.Println("the unmarshal result ==>", std)
 	defer cli.Close()
 }
+
+// MultipartSetString 批量设置字符串 MGet
+func MultipartSetString() {
+	//获取连接
+	flag.Parse()
+	pool := newPool(*serverParam)
+	cli := pool.Get()
+	//MSet数据
+	_, err := cli.Do("MSet", "key1", 10, "key2", 20)
+	if err != nil {
+		fmt.Println("multipart set error ==>", err)
+		return
+	}
+	//MGet数据
+	values, err := redis.Ints(cli.Do("MGet", "key1", "key2"))
+	for k, v := range values {
+		fmt.Println("[MGet] =>", k, v)
+	}
+	//关闭连接
+	defer cli.Close()
+}
+
+// ExpireKey 设置key过期时间
+func ExpireKey() {
+	flag.Parse()
+	pool := newPool(*serverParam)
+	cli := pool.Get()
+	_, err := cli.Do("expire", "key2", "10")
+	if err != nil {
+		fmt.Println("[expire error]")
+		return
+	}
+	defer cli.Close()
+}
+
+// ListOperation list 操作
+func ListOperation() {
+	flag.Parse()
+	pool := newPool(*serverParam)
+	cli := pool.Get()
+	defer cli.Close()
+	// left push 元素
+	_, err := cli.Do("lpush", "program_list", "Golang", "Java", "Julia")
+	if err != nil {
+		return
+	}
+	// left pop
+	s, err := redis.String(cli.Do("lpop", "program_list"))
+	if err == nil {
+		fmt.Println(s)
+	}
+
+}
+
+// HashOperation hash 操作
+func HashOperation() {
+	flag.Parse()
+	pool := newPool(*serverParam)
+	cli := pool.Get()
+	defer cli.Close()
+	//HSet
+	_, err := cli.Do("HSet", "Books", "BookKey01", "Java入门到精通-32元")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	//HGet
+	do, err := cli.Do("HGet", "Books", "BookKey01")
+	value, err := redis.String(do, err)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(value)
+}
