@@ -38,19 +38,17 @@ type UserInfo struct {
 }
 
 type EmbedModel struct {
-	UUID  uint       `gorm:"primaryKey;type:int(11) auto_increment;not null;unique;;comment:自增id"`
+	UUID  uint       `gorm:"primaryKey;type:int(11) auto_increment;not null;unique;comment:id"`
 	Time1 *time.Time `gorm:"type:datetime;column:create_time;comment:创建时间"`
 	Time2 *time.Time `gorm:"type:datetime;column:update_time;comment:更新时间"`
 }
 
 type Model struct {
-	//继承
 	EmbedModel EmbedModel `gorm:"embedded;embeddedPrefix:rookie_"`
-	//自己的属性
-	Name     string     `gorm:"type:varchar(255);comment:姓名"`
-	Age      uint8      `gorm:"type:int(11);comment:年龄"`
-	Birthday *time.Time `gorm:"type:datetime;comment:生日"`
-	Email    string     `gorm:"type:varchar(32);comment:邮箱地址"`
+	Name       string     `gorm:"type:varchar(255);comment:姓名"`
+	Age        uint8      `gorm:"type:int(11);comment:年龄"`
+	Birthday   *time.Time `gorm:"type:datetime;comment:生日"`
+	Email      string     `gorm:"type:varchar(32);comment:邮箱地址"`
 }
 
 type User struct {
@@ -63,7 +61,7 @@ type User struct {
 
 func initConnection() (db *gorm.DB, err error) {
 	d, e := gorm.Open(mysql.New(mysql.Config{
-		DSN: "root:root12#$@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local",
+		DSN: "root:123456@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local",
 	}), &gorm.Config{
 		SkipDefaultTransaction: false, //跳过gorm默认带上事物的设置
 		NamingStrategy: schema.NamingStrategy{ //表、行的命名策略
@@ -75,7 +73,7 @@ func initConnection() (db *gorm.DB, err error) {
 	return d, e
 }
 
-/*CRUD*/
+/* CRUD 增删改查*/
 func Delete() {
 	db, _ := initConnection()
 	//实体类主键删除
@@ -184,7 +182,7 @@ func Query() {
 }
 func Main03() {
 	db, _ := gorm.Open(mysql.New(mysql.Config{
-		DSN: "root:root12#$@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local",
+		DSN: "root:123456@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local",
 	}), &gorm.Config{
 		SkipDefaultTransaction: false, //跳过gorm默认带上事物的设置
 		NamingStrategy: schema.NamingStrategy{ //表、行的命名策略
@@ -222,14 +220,23 @@ func Main03() {
 	}
 }
 
-/*模型:落地gorm标准的结构体或者接口*/
+/*
+Open
+	作用：用于初始化数据库会话
+	入参：2个接口对象。前者是数据库方言接口 Dialector,后者是 Option。
+		- Dialector
+			由具体的数据库方式驱动实现接口的全部方法（如引入的gorm mysql驱动包里的mysql.go便实现了该接口的全部方法，定义一个结构体Config且将其指针类型定义成新类型Dialector）
+			可以使用mysql.go(驱动包)下的New函数，传入数据源初始化mysql驱动包的config结构体（实现了Dialector）返回对应Dialector对象
+		- Option
+			gorm的配置结构体gorm.go下的config实现了该接口，直接初始化
+*/
 func main() {
 	db, _ := gorm.Open(mysql.New(mysql.Config{
-		DSN: "root:root12#$@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local",
+		DSN: "root:123456@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local", //数据源
 	}), &gorm.Config{
 		SkipDefaultTransaction: false, //跳过gorm默认带上事物的设置
 		NamingStrategy: schema.NamingStrategy{ //表、行的命名策略
-			TablePrefix:   "t_",
+			TablePrefix:   "t_", //创建表前缀
 			SingularTable: false,
 		},
 		DisableForeignKeyConstraintWhenMigrating: true,
@@ -240,9 +247,9 @@ func main() {
 /*基本用法*/
 func main01() {
 	db, _ := gorm.Open(mysql.New(mysql.Config{
-		DSN: "root:root12#$@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local",
+		DSN: "root:123456@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local",
 	}), &gorm.Config{
-		SkipDefaultTransaction: false, //跳过gorm默认带上事物的设置
+		SkipDefaultTransaction: false, //跳过gorm的默认事务
 		NamingStrategy: schema.NamingStrategy{ //表、行的命名策略
 			TablePrefix:   "t_",
 			SingularTable: false,
