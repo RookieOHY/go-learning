@@ -18,7 +18,8 @@ package main
 			Select("structFieldName"): 仅插入表某一个字段的值
 			Create(对象的指针):插入数据
 			Omit("structFieldName"): 忽略这个字段的插入
-
+		结构体的定义：
+			适当选择指针类型。（字段类型为*stirng 默认值为nil对应null ,string默认为空串）
 
 */
 
@@ -118,6 +119,7 @@ func Update() {
 	}
 }
 
+// QueryWithCondition 条件查询
 func QueryWithCondition() {
 	db, err := initConnection()
 	if err == nil {
@@ -149,7 +151,8 @@ func QueryWithCondition() {
 		//dbptr:=db.Select("name","age").Find(&mds)
 		//dbptr:=db.Select([]string{"name","age"}).Find(&mds)
 
-		dbptr := db.Model(&Model{}).Find(&mfs)
+		//dbptr := db.Model(&Model{}).Find(&mfs)
+		dbptr := db.Model(&Model{}).Find(&mfs, []int{3, 4, 5})
 
 		if dbptr.Error != nil {
 			//打印错误
@@ -167,17 +170,31 @@ func QueryWithCondition() {
 func Query() {
 	db, err := initConnection()
 	if err == nil {
-		//使用map接收（没有被初始化map）
+		//使用map接收（查询前需要初始化map且指定模型）
 		//var resultMap map[string]interface{}
-		//使用对应的结构体接收
-		var md Model
+
+		//使用对应的结构体接收单条记录
+		//var md Model
+
+		//使用切片姐接收多条记录
+		var mds []Model
+
 		//按照主键排序 取第一条
 		//db.Model(&Model{}).First(&md)
+
 		//不按照主键排序
 		//db.Model(&Model{}).Take(&md)
+
 		//获取最后一条 按照主键排序
-		db.Model(&Model{}).Last(&md)
-		fmt.Println(md)
+		//db.Model(&Model{}).Last(&md)
+
+		//结构体本身就可以体现模型 无需指定模型
+		//db.Last(&md)
+
+		//查询多条记录
+		db.Find(&mds)
+		fmt.Println(mds)
+		//fmt.Println(md)
 	}
 }
 func Main03() {
@@ -192,7 +209,7 @@ func Main03() {
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	now := time.Now()
-	//插入数据(单)
+	//插入数据(忽略某一个属性)
 	db.Omit("Name").Create(&Model{
 		EmbedModel: EmbedModel{
 			//UUID: 1,
@@ -209,6 +226,19 @@ func Main03() {
 	dbptr2 := db.Create(&[]Model{
 		{Name: "RookieOHY02"},
 		{Name: "RookieOHY03"},
+	})
+
+	//插入数据（仅插入Name属性）
+	db.Select("Name").Create(&Model{
+		EmbedModel: EmbedModel{
+			//UUID:
+			Time1: &now,
+			Time2: &now,
+		},
+		Name:     "KIWI",
+		Age:      25,
+		Birthday: nil,
+		Email:    "",
 	})
 
 	err := dbptr2.Error
@@ -251,6 +281,7 @@ func main00() {
 /*
 	Migrator（接口）
 		作用：可以操作表、列、索引、约束、视图等
+        方法：操作表等函数，支持传入结构体和实际的表名字（推荐前者）
 */
 func main01() {
 	db, _ := gorm.Open(mysql.New(mysql.Config{
@@ -296,5 +327,5 @@ func main01() {
 	//列操作
 	//db.Migrator().AddColumn(&User{}, "sex")
 	//db.Migrator().DropColumn(&User{}, "sex")
-	db.Migrator().RenameColumn(&User{}, "sex", "new_sex")
+	m.RenameColumn(&User{}, "sex", "new_sex")
 }
