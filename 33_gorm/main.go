@@ -60,6 +60,7 @@ type User struct {
 	Sex int
 }
 
+// initConnection 初始化数据库连接
 func initConnection() (db *gorm.DB, err error) {
 	d, e := gorm.Open(mysql.New(mysql.Config{
 		DSN: "root:123456@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local",
@@ -74,7 +75,7 @@ func initConnection() (db *gorm.DB, err error) {
 	return d, e
 }
 
-/* CRUD 增删改查*/
+// Delete 删除操作
 func Delete() {
 	db, _ := initConnection()
 	//实体类主键删除
@@ -94,6 +95,7 @@ func Delete() {
 	}
 }
 
+// Update 更新操作（类比查询操作即可）
 func Update() {
 	db, err := initConnection()
 	if err == nil {
@@ -152,6 +154,7 @@ func QueryWithCondition() {
 		//dbptr:=db.Select([]string{"name","age"}).Find(&mds)
 
 		//dbptr := db.Model(&Model{}).Find(&mfs)
+		//查询时 需要指定原始模型
 		dbptr := db.Model(&Model{}).Find(&mfs, []int{3, 4, 5})
 
 		if dbptr.Error != nil {
