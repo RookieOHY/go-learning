@@ -229,22 +229,29 @@ Open
 			可以使用mysql.go(驱动包)下的New函数，传入数据源初始化mysql驱动包的config结构体（实现了Dialector）返回对应Dialector对象
 		- Option
 			gorm的配置结构体gorm.go下的config实现了该接口，直接初始化
+AutoMigrate
+	作用：表的迁移（结构体建表）
+	参数：一个或者多个结构体对象
+
 */
-func main() {
+func main00() {
 	db, _ := gorm.Open(mysql.New(mysql.Config{
 		DSN: "root:123456@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local", //数据源
 	}), &gorm.Config{
 		SkipDefaultTransaction: false, //跳过gorm默认带上事物的设置
 		NamingStrategy: schema.NamingStrategy{ //表、行的命名策略
-			TablePrefix:   "t_", //创建表前缀
-			SingularTable: false,
+			TablePrefix:   "t_",  //创建表前缀
+			SingularTable: false, //使用负数表
 		},
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	db.AutoMigrate(&Model{})
 }
 
-/*基本用法*/
+/*
+	Migrator（接口）
+		作用：可以操作表、列、索引、约束、视图等
+*/
 func main01() {
 	db, _ := gorm.Open(mysql.New(mysql.Config{
 		DSN: "root:123456@tcp(127.0.0.1:3306)/02-gorm?charset=utf8&parseTime=True&loc=Local",
@@ -267,25 +274,27 @@ func main01() {
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	//自动建表
-	//err := db.AutoMigrate(&User{})
-	//m := db.Migrator()
+	db.AutoMigrate(&User{})
 
-	//获取数据库
-	//database := m.CurrentDatabase()
-	//fmt.Println(database)
+	//获取Migrator对象
+	m := db.Migrator()
+
+	//获取数据库名字
+	database := m.CurrentDatabase()
+	fmt.Println(database)
 
 	//表操作
-	//if m.HasTable(&User{}) {
-	//	//删除表
-	//	//m.DropTable(&User{})
-	//}else {
-	//	//建立表且重命名
-	//	m.CreateTable(&User{})
-	//	//m.RenameTable(&User{},"rename_user")
-	//}
+	if m.HasTable(&User{}) {
+		//删除表
+		//m.DropTable(&User{})
+	} else {
+		//建立表且重命名
+		m.CreateTable(&User{})
+		//m.RenameTable(&User{},"rename_user")
+	}
 
 	//列操作
-	//db.Migrator().AddColumn(&User{},"Sex")
-	//db.Migrator().DropColumn(&User{},"Sex")
-	//db.Migrator().RenameColumn(&User{},"Sex","NewSex")
+	//db.Migrator().AddColumn(&User{}, "sex")
+	//db.Migrator().DropColumn(&User{}, "sex")
+	db.Migrator().RenameColumn(&User{}, "sex", "new_sex")
 }
