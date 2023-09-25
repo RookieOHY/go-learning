@@ -29,3 +29,7 @@ func TestNewEngineWithParams(t *testing.T) {
 func TestNewEngineWithDB(t *testing.T) {
 	NewEngineWithDB()
 }
+
+func TestSnakeMapper(t *testing.T) {
+	SnakeMapper()
+}

@@ -10,6 +10,7 @@ import (
 	"time"
 	"xorm.io/xorm"
 	"xorm.io/xorm/core"
+	"xorm.io/xorm/names"
 )
 
 func CreateEngine() *xorm.Engine {
@@ -106,4 +107,72 @@ func NewEngineWithDB() *xorm.Engine {
 		panic(err)
 	}
 	return engine
+}
+
+type AppUser struct {
+	ID        int64      `xorm:"varchar(25) notnull  pk unique  comment('id')"`
+	UserName  string     `xorm:"varchar(25) notnull  comment('姓名')"`
+	UserAge   int8       `xorm:"int(11) null comment('年龄')"`
+	UserBirth *time.Time `xorm:"datetime null comment('生日')"`
+	Email     string     `xorm:"varchar(32) null comment('邮箱')"`
+	//结构体变动
+	Address string `xorm:"varchar(32) null comment('住址')"`
+}
+
+func SnakeMapper() {
+	engine := GetEngine()
+
+	//驼峰映射 (默认作用于：表名字+字段名字)
+	engine.SetMapper(names.NewPrefixMapper(names.SnakeMapper{}, "rk_"))
+
+	//这是数据库连接时的字符集 而不是 建表字符集 (仅mysql使用)
+	//设置存储引擎(仅mysql使用)
+	err := engine.StoreEngine("MyISAM").Charset("utf8mb4").CreateTable(&AppUser{})
+
+	//值得一提的是：当结构体新增属性的时候 重新执行建表操作 并不会更新表结构 （CREATE TABLE IF NOT EXISTS ......）
+	engine.Sync2(&AppUser{})
+
+	if err != nil {
+		panic(err)
+	}
+	//判断表是否为空（无任何记录）
+	empty, err := engine.IsTableEmpty(&AppUser{})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("不存在记录", empty)
+
+	//判断表是否存在
+	exist, err := engine.IsTableExist(&AppUser{})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("存在表", exist)
+
+	//删除表
+	//err = engine.DropTables(&AppUser{})
+	//if err != nil {
+	//	panic(err)
+	//}
+
+	//获取数据库信息
+	metas, err := engine.DBMetas()
+	for _, meta := range metas {
+		name := meta.Name
+		fmt.Println(name)
+	}
+
+	//提取实际的表结构
+	infos, err := engine.TableInfo(&AppUser{})
+	fmt.Println(infos.Name)
+}
+
+func SameMapper() {
+	engine := GetEngine()
+	//表、字段名字 和 结构体声明
+	engine.SetMapper(names.SameMapper{})
+}
+
+func GonicMapper() {
+
 }
