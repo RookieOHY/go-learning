@@ -33,3 +33,23 @@ func TestNewEngineWithDB(t *testing.T) {
 func TestSnakeMapper(t *testing.T) {
 	SnakeMapper()
 }
+
+func TestGonicMapper(t *testing.T){
+	GonicMapper()
+}
+
+func TestTableName(t *testing.T){
+	TableName()
+}
+
+func TestColumnTag(t *testing.T){
+	ColumnTag()
+}
+
+func TestDump(t *testing.T){
+	Dump()
+}
+
+func TestImport(t *testing.T){
+	Import()
+}
