@@ -113,38 +113,37 @@ func NewEngineWithDB() *xorm.Engine {
 	return engine
 }
 
-
 // 当结构体是自定义类型 默认会被存储为Text 且使用json序列化和反序列化
 type RKString string
 type RKMap map[RKString]RKString
 type RKSlicp []RKString
-type Extends struct{
-	CityName string
+type Extends struct {
+	CityName     string
 	ProvinceName string
 }
-type Additional struct{
-	FatherName string
+type Additional struct {
+	FatherName  string
 	MothoreName string
 }
 
 // 当属性是 *time.Time 要求在xorm里面手动声明表类型 datetime（不然无法映射）
 // 字段的类型和容纳大小推荐自己设置，否则就是xorm的默认映射类型（可能不合适）
-type AppUsers struct{
-	ID int64 `xorm:"'id'  notnull  pk unique autoincr  comment('id')"`
-	UserName string `xorm:"'username' null varchar(32) comment('用户名')"`
-	Age int8 `xorm:" 'age' null comment('年龄')"`
-	Email string `xorm:" 'email' null comment('邮箱')"`
+type AppUsers struct {
+	ID         int64      `xorm:"'id'  notnull  pk unique autoincr  comment('id')"`
+	UserName   string     `xorm:"'username' null varchar(32) comment('用户名')"`
+	Age        int8       `xorm:" 'age' null comment('年龄')"`
+	Email      string     `xorm:" 'email' null comment('邮箱')"`
 	CreateTime *time.Time `xorm:"datetime created null comment('创建时间')"`
 	UpdateTime *time.Time `xorm:"datetime updated deleted null comment('更新时间')"`
-	IsDeleted bool `xorm:"  default(0) comment('是否删除')"`
-	NonMaping string `xorm:"-"` // 不映射的属性
-	OnlyWrite string `xorm:"->"`
-	OnlyRead string `xorm:"<-"`
-	Data Additional `xorm:"data" json:"data"` //写入json
-	Extends Extends `xorm:"extends"` //将这个接口的属性映射为字段
-	RKString RKString
-	RKMap RKMap
-	RKSlicp RKSlicp
+	IsDeleted  bool       `xorm:"  default(0) comment('是否删除')"`
+	NonMaping  string     `xorm:"-"` // 不映射的属性
+	OnlyWrite  string     `xorm:"->"`
+	OnlyRead   string     `xorm:"<-"`
+	Data       Additional `xorm:"data" json:"data"` //写入json
+	Extends    Extends    `xorm:"extends"`          //将这个接口的属性映射为字段
+	RkString   RKString
+	RKMap      RKMap
+	RKSlicp    RKSlicp
 }
 
 type AppUser struct {
@@ -164,7 +163,7 @@ func SnakeMapper() {
 	// 关于前缀（作用于表 和 字段名字）和后缀（作用于表 和 字段名字）、不包括id
 	// 会创建2张表，互不影响
 	engine.SetMapper(names.NewPrefixMapper(names.SnakeMapper{}, "rk_"))
-	engine.SetMapper(names.NewSuffixMapper(names.SnakeMapper{},"_end"))
+	engine.SetMapper(names.NewSuffixMapper(names.SnakeMapper{}, "_end"))
 
 	// 这是数据库连接时的字符集 而不是 建表字符集 (仅mysql使用)
 	// 设置存储引擎(仅mysql使用)
@@ -219,76 +218,79 @@ func GonicMapper() {
 	engine.SetMapper(names.GonicMapper{})
 }
 
-func(appUser *AppUser) TableName() string{
+func (appUser *AppUser) TableName() string {
 	return "your_app_user"
 }
 
-func TableName(){
+func TableName() {
 	// doc : 结构体拥有 TableName() string 的成员方法，那么此方法的返回值即是该结构体对应的数据库表名
 	engine := GetEngine()
 	err := engine.CreateTables(&AppUser{})
 	// engine.Table("your_app_user_02")
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 	fmt.Println("create table success!")
 
-	user := &AppUser{ID:2,UserName:"RookieOHY",UserAge:25}
+	user := &AppUser{ID: 2, UserName: "RookieOHY", UserAge: 25}
 
-	_ , err = engine.InsertOne(user)
-	if err != nil{
+	_, err = engine.InsertOne(user)
+	if err != nil {
 		panic(err)
 	}
 	//result 看起来id从0开始的
-	fmt.Println("insert row success!",user.ID)
+	fmt.Println("insert row success!", user.ID)
 }
 
 // Column tag example
 
-func ColumnTag(){
+func ColumnTag() {
 	ex := GetEngine()
 	err := ex.CreateTables(&AppUsers{})
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 	fmt.Println("[测试行标签-创建表]成功")
 
 	// 如果表已经存在 不再创建 此时更新
 	err = ex.Sync2(&AppUsers{})
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 }
 
-func saveToFile(buffer io.Writer,fileName string){
+func saveToFile(buffer io.Writer, fileName string) {
 	file, err := os.Create(fileName)
-	if err!=nil{
+	if err != nil {
 		panic(err)
-		return
 	}
 	defer file.Close()
 }
 
-func Dump(){
+func Dump() {
 	// 直接dump文件
 	ex := GetEngine()
 	err := ex.DumpAllToFile("db.sql")
-	if err!=nil{
+	if err != nil {
 		panic(err)
 	}
 	fmt.Println("dump db to file success!")
 	// dump到buffer
 	var buffer bytes.Buffer
 	err = ex.DumpAll(&buffer)
-	if err!=nil{
+	if err != nil {
 		panic(err)
 	}
-	// buffer to file 
-	saveToFile(&buffer,"dump.sql")
+	// buffer to file
+	saveToFile(&buffer, "dump.sql")
 	fmt.Println("dump db to buffer success!")
 }
 
-func Import(){
-	GetEngine()
-	//ex := GetEngine()
+func Import() {
+	ex := GetEngine()
+	r, err := ex.ImportFile("D://Github Clone Project//go-learnin//41_xorm//db.sql")
+	if r != nil {
+		panic(err)
+	}
+	fmt.Println(r)
 }
