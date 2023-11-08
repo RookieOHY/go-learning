@@ -1,6 +1,10 @@
 package _1_xorm
 
-import "testing"
+import (
+	"testing"
+
+	_ "github.com/go-sql-driver/mysql"
+)
 
 func TestCreateEngine(t *testing.T) {
 	CreateEngine()
@@ -34,22 +38,38 @@ func TestSnakeMapper(t *testing.T) {
 	SnakeMapper()
 }
 
-func TestGonicMapper(t *testing.T){
+func TestGonicMapper(t *testing.T) {
 	GonicMapper()
 }
 
-func TestTableName(t *testing.T){
+func TestTableName(t *testing.T) {
 	TableName()
 }
 
-func TestColumnTag(t *testing.T){
+func TestColumnTag(t *testing.T) {
 	ColumnTag()
 }
 
-func TestDump(t *testing.T){
+func TestDump(t *testing.T) {
 	Dump()
 }
 
-func TestImport(t *testing.T){
+func TestImport(t *testing.T) {
 	Import()
+}
+
+func TestInsert(t *testing.T) {
+	Insert()
+}
+
+func TestInsertBatch(t *testing.T) {
+	InsertBatch()
+}
+
+func TestInsertSlice(t *testing.T) {
+	InsertSlice()
+}
+
+func TestInsertMultiTable(t *testing.T) {
+	InsertMultiTable()
 }

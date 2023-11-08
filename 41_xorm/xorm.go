@@ -113,6 +113,13 @@ func NewEngineWithDB() *xorm.Engine {
 	return engine
 }
 
+type User struct {
+    Id int64
+    Name string
+    CreatedAt time.Time `xorm:"created"`
+}
+
+
 // 当结构体是自定义类型 默认会被存储为Text 且使用json序列化和反序列化
 type RKString string
 type RKMap map[RKString]RKString
@@ -287,10 +294,82 @@ func Dump() {
 }
 
 func Import() {
+	// 导入和执行脚本
 	ex := GetEngine()
-	r, err := ex.ImportFile("D://Github Clone Project//go-learnin//41_xorm//db.sql")
+	r, err := ex.ImportFile("D:/Github Clone Project/go-learning/41_xorm/db.sql")
 	if r != nil {
 		panic(err)
 	}
 	fmt.Println(r)
 }
+
+// 插入数据 
+func Insert(){
+	ex := GetEngine()
+    au := new(AppUser)
+	au.UserName = "ni de mz zz..."
+	// 值得一提的是 执行多次 都会执行成功 但是数据库表只有1条记录
+	i, err := ex.Insert(au)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("单插入 %d 条记录",i)
+	fmt.Printf("主键为 %d ",au.ID)
+}
+
+func InsertBatch(){
+	ex := GetEngine()
+	au := make([]AppUser, 2)
+	au[0].ID = 1
+	au[0].UserName = "item 01"
+	au[1].ID = 2
+	au[1].UserName = "item 02"
+	i, err := ex.Insert(&au)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("批量插入 %d 条记录",i)
+}
+
+func InsertSlice(){
+	// 值得一提的是 插入的入参 可以是单结构体指针 或者 多个结构体指针 或者 结构体切片的指针
+	ex := GetEngine()
+	au := make([]*AppUser, 2)
+	// 上面创建了一个大小为2的切片 切片每一个成员是指向AppUser的指针
+	au[0]= new(AppUser)
+	au[1]= new(AppUser)
+	au[0].ID = 3
+	au[0].UserName = "QAQ"
+	au[1].ID = 4
+	au[1].UserName = "QAQQAQ"
+	// 执行插入 
+	i, err := ex.Insert(&au)
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Printf("插入i: %v\n", i)
+}
+
+func InsertMultiTable(){
+	ex := GetEngine()
+	// 插入不同表的多条记录 或者 一条记录
+	u := make([]User, 1)
+	u[0].Name = "RookieOHY"
+
+	u2 := make([]AppUser, 1)
+	u2[0].UserName = "RookieOHY"
+
+	i, err := ex.Insert(&u, &u2)
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Printf("插入多个对象 i: %v\n", i)
+	fmt.Printf("u[0].CreatedAt: %v\n", u[0].CreatedAt)
+}
+// 查询数据 TODO
+// 更新数据 TODO
+// 删除数据 TODO
+// 手动sql执行 TODO
+// 事务 TODO
+// 缓存 TODO
+// 其他 TODO
