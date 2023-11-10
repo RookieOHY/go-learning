@@ -422,7 +422,7 @@ func Or(){
 	ex := GetEngine()
 	ex.Alias("user")
 	var users []User
-	err := ex.Where("user.id = ?", 1).Or("user.id = ?", 2).Find(&users)
+	err := ex.Where("user.id = ?", 1).Or("user.id = ?", 2).OrderBy("user.id desc").Find(&users)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -430,8 +430,38 @@ func Or(){
 	for _, v := range users {
 		fmt.Printf("v: %v\n", v)
 	}
-
 }
+
+// select 定制化(自定义)sql 针对自定义字段
+func Select(){
+	ex := GetEngine()
+	ex.Alias("user")
+	var users []User
+	err := ex.Select("user.*,(select user.id from user limit 1)").Find(&users)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, v := range users {
+		fmt.Printf("v: %v\n", v)
+	}
+}
+
+// sql 直接写sql
+func SQL(){
+	ex := GetEngine()
+	ex.Alias("user")
+	var users []User
+	err := ex.SQL("select user.id from user").Find(&users)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, v := range users {
+		fmt.Printf("v: %v\n", v)
+	}
+}
+
+// in 
+
 
 
 // 更新数据 TODO

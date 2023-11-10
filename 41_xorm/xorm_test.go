@@ -89,3 +89,11 @@ func TestQPrimary(t *testing.T){
 func TestOr(t *testing.T){
 	Or()
 }
+
+func TestSelect(t *testing.T){
+	Select()
+}
+
+func TesSQL(t *testing.T) {
+	SQL()
+}
