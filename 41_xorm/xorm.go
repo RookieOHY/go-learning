@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	// "google.golang.org/protobuf/internal/order"
 	"xorm.io/xorm"
 	"xorm.io/xorm/core"
 	"xorm.io/xorm/names"
@@ -366,7 +368,72 @@ func InsertMultiTable(){
 	fmt.Printf("插入多个对象 i: %v\n", i)
 	fmt.Printf("u[0].CreatedAt: %v\n", u[0].CreatedAt)
 }
-// 查询数据 TODO
+// 查询数据 设计查询的函数 基本都是链式调用
+func Alias(){
+	// 为数据表设置一个别名
+	ex := GetEngine()
+	ex.Alias("user")
+	var user User
+	id := 1
+	b, err := ex.Where("user.id = ?", id).And("user.name = ?","RookieOHY").Get(&user)
+	if b {
+		json, _ := json.Marshal(user)
+		fmt.Printf("Order found: %s\n", json)
+	}else {
+		log.Fatal(err)
+	}
+}
+
+// 查询 排序
+func OrderBy(){
+	ex := GetEngine()
+	ex.Alias("user")
+	var users []User
+	// err := ex.Asc("user.id").Find(&users)
+	err := ex.Desc("user.id").Find(&users)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(" users ordered by id:")
+	for _, v := range users {
+		fmt.Printf("v: %v\n", v)
+	}
+}
+
+// 查询 主键
+func QPrimary(){
+	ex := GetEngine()
+	ex.Alias("user")
+	var user User
+	b, err := ex.ID(3).Get(&user)
+	if b {
+		json, _ := json.Marshal(user)
+		fmt.Printf("Order found: %s\n", json)
+	}else {
+		log.Fatal(err)
+	}
+	// 联合（复合主键）的查询
+	// err := engine.ID(schemas.PK{1, "name"}).Get(&user)
+	
+}
+
+// or 查询
+func Or(){
+	ex := GetEngine()
+	ex.Alias("user")
+	var users []User
+	err := ex.Where("user.id = ?", 1).Or("user.id = ?", 2).Find(&users)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(" users ordered by id:")
+	for _, v := range users {
+		fmt.Printf("v: %v\n", v)
+	}
+
+}
+
+
 // 更新数据 TODO
 // 删除数据 TODO
 // 手动sql执行 TODO

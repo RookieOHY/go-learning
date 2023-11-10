@@ -73,3 +73,19 @@ func TestInsertSlice(t *testing.T) {
 func TestInsertMultiTable(t *testing.T) {
 	InsertMultiTable()
 }
+
+func TestAlias(t *testing.T) {
+	Alias()
+}
+
+func TestOrderBy(t *testing.T) {
+	OrderBy()
+}
+
+func TestQPrimary(t *testing.T){
+	QPrimary()
+}
+
+func TestOr(t *testing.T){
+	Or()
+}
