@@ -536,6 +536,87 @@ func Distinct(){
 	}
 }
 
+// table 传入表名称或者结构体指针，如果传入的是结构体指针，则按照IMapper的规则提取出表名
+func Table()  {
+	ex := GetEngine()
+	ex.Alias("user")
+	// 设置表名映射规则
+	ex.SetMapper(names.GonicMapper{})
+	ex.Table(&User{})
+	// 执行查询
+	u := make([]User, 0)
+	ex.Find(&u)
+	fmt.Println(len(u))
+}
+
+// 查询固定条数的记录
+func LimitTop(){
+	ex := GetEngine()
+	ex.Alias("user")
+	var users []User
+	err := ex.Limit(2, 1).Find(&users)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, v := range users {
+		fmt.Printf("v: %v\n", v)
+	}
+}
+
+// 分组
+func Group(){
+	ex := GetEngine()
+	ex.Alias("user")
+	var users []User
+	err := ex.GroupBy("user.name").Having("name = 'wangmeiyi'").Find(&users)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, v := range users {
+		fmt.Printf("v: %v\n", v)
+	}
+}
+
+// 查询单条数据 get
+func Get(){
+	ex := GetEngine()
+	ex.Alias("user")
+	// var user User 
+	userPtr := new(User)
+	// 值得一提的是 get方法参数类型是指针类型
+	// eg: Id + Get 
+	_, err := ex.ID(1).Get(userPtr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(userPtr.Id)
+
+	// eg: where + get 
+	var user User 
+	_, err2 := ex.Where("id = ?", 2).Get(&user)
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+	fmt.Println(user.Id)
+
+	//eg:使用结构体中的非空属性来执行查询
+	qPtr := &User{
+		Id:3,
+	}
+	_, err3 := ex.Get(qPtr)
+	if err3 != nil {
+		log.Fatal(err3)
+	}
+
+	fmt.Println(qPtr.Name)
+
+
+}
+
+func Find(){
+	
+}
 // 更新数据 TODO
 // 删除数据 TODO
 // 手动sql执行 TODO

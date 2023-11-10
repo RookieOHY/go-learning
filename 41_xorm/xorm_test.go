@@ -113,3 +113,20 @@ func TestMustCols(t *testing.T) {
 func TestDistinct(t *testing.T) {
 	Distinct()
 }
+
+func TestTable(t *testing.T) {
+	Table()
+}
+
+func TestLimitTop(t *testing.T) {
+	LimitTop()
+}
+
+func TestGroup(t *testing.T) {
+	Group()
+}
+
+
+func TestGet(t *testing.T) {
+	Get()
+}
