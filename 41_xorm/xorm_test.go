@@ -105,3 +105,11 @@ func TestIn(t *testing.T){
 func TestCols(t *testing.T) {
 	Cols()
 }
+
+func TestMustCols(t *testing.T) {
+	MustCols()
+}
+
+func TestDistinct(t *testing.T) {
+	Distinct()
+}

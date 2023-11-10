@@ -509,6 +509,32 @@ func Cols()  {
 	fmt.Printf("i: %v\n", all)
 }
 
+// MustCols 某些字段默认不会被更新
+func MustCols()  {
+	ex := GetEngine()
+	ex.Alias("user")
+	upItem := User{Id: 1,Name:"rk",CreatedAt: time.Now()}
+	all, err3 := ex.ID(upItem.Id).MustCols("created_at").Update(&upItem)
+	if err3 != nil {
+		log.Fatal(err3)
+	}
+	fmt.Println("强制更新日期")
+	fmt.Printf("i: %v\n", all)
+} 
+
+// Distinct
+func Distinct(){
+	ex := GetEngine()
+	ex.Alias("user")
+	var users []User
+	err := ex.Distinct("name").Find(&users)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, v := range users {
+		fmt.Printf("v: %v\n", v)	
+	}
+}
 
 // 更新数据 TODO
 // 删除数据 TODO
