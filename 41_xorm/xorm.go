@@ -461,7 +461,53 @@ func SQL(){
 }
 
 // in 
+func In()  {
+	ex := GetEngine()
+	ex.Alias("user")
+	var users []User
+	// err := ex.In("user.id", 1, 2).Find(&users)
+	err := ex.In("user.id", []int64{1,2,3}).Find(&users)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, u := range users {
+		fmt.Printf("v: %v\n", u)
+	}
+}
 
+// cols 指定操作某些字段（查询或者更新某些特定字段使用）
+func Cols()  {
+	ex := GetEngine()
+	ex.Alias("user")
+	var users []User
+	// 查询指定字段
+	err := ex.Cols("user.id").Find(&users)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("查询指定字段：id")
+	for _, u := range users {
+		fmt.Printf("v: %v\n", u)
+	}
+	// users[0].Name = "subhee"
+	upItem := User{Id: 1,Name:"subhee"}
+	// 执行更新字段 name (更新的时候需要指定条件 不设置主键或者其他调价 此时的更新将是全表更新！)
+	i, err2 := ex.ID(upItem.Id).Cols("name").Update(&upItem)
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+	fmt.Println("更新指定字段：name")
+	fmt.Printf("i: %v\n", i)
+
+	//更新所有字段
+	upItem = User{Id: 1,Name:"subhee love rk~",CreatedAt: time.Now()}
+	all, err3 := ex.ID(upItem.Id).AllCols().Update(&upItem)
+	if err3 != nil {
+		log.Fatal(err3)
+	}
+	fmt.Println("更新全部字段")
+	fmt.Printf("i: %v\n", all)
+}
 
 
 // 更新数据 TODO

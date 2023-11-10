@@ -97,3 +97,11 @@ func TestSelect(t *testing.T){
 func TesSQL(t *testing.T) {
 	SQL()
 }
+
+func TestIn(t *testing.T){
+	In()
+}
+
+func TestCols(t *testing.T) {
+	Cols()
+}
