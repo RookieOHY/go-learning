@@ -33,9 +33,9 @@ Go 代码审查方法：
 /*
 ①内存逃逸分析demo
 	使用
-		go build -gcflags="-m -l" .\26_code_review\main.go 编译测试是否存在内存逃逸
+		go build -gcflags="-m -l" .\26_code_review\httpMethod.go 编译测试是否存在内存逃逸
 	结果
-		26_code_review\main.go:39:8: new(string) escapes to heap
+		26_code_review\httpMethod.go:39:8: new(string) escapes to heap
 	结论
 		函数返回指针类型的变量，一定会发生内存逃逸。
 		被已经逃逸的指针引用的变量也会发生逃逸.
