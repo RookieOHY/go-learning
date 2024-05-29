@@ -1,0 +1,20 @@
+POST http://localhost:9999/form
+Content-Type: application/x-www-form-urlencoded
+
+id=999&value=content
+
+###
+
+POST http://localhost:9999/user/save
+Content-Type: application/json
+
+{
+  "name": "ohy",
+  "email": "ohy@qq.com"
+}
+
+###
+GET http://localhost:9999/admin/mw
+Content-Type: application/json
+Authorization: Basic {{username}} {{password}}
+
