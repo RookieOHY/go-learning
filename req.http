@@ -18,3 +18,20 @@ GET http://localhost:9999/admin/mw
 Content-Type: application/json
 Authorization: Basic {{username}} {{password}}
 
+
+###
+GET http://localhost:9999/ctx
+
+
+###
+GET http://localhost:9999/createCookie
+
+
+###
+POST http://localhost:9999/valid
+Content-Type: application/json
+
+{
+  "name": "ohy",
+  "email": "ohy@errordomain"
+}

@@ -1,20 +1,65 @@
 package _1_echo
 
 import (
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"net/http"
+	"time"
 )
 
 // user
 
 type User struct {
-	Name  string `json:"name" xml:"name" query:"name" form:"name"`
-	Email string `json:"email" xml:"email" query:"email" form:"email"`
+	Name  string `json:"name" xml:"name" query:"name" form:"name" validate:"required"`
+	Email string `json:"email" xml:"email" query:"email" form:"email" validate:"required,email"`
+}
+
+// MyCtx 结构体持有echo.Context 并且实现2个函数
+type MyCtx struct {
+	echo.Context
+}
+
+func (receiver *MyCtx) foo() {
+	println("foo方法执行了")
+}
+
+func (receiver *MyCtx) bar() {
+	println("bar方法执行了")
+}
+
+type (
+	RequestValidator struct {
+		// 最好申明 指针类型
+		validator *validator.Validate
+	}
+)
+
+func (receiver *RequestValidator) Validate(i interface{}) error {
+	return receiver.validator.Struct(i)
 }
 
 func EchoMain() {
 	e := echo.New()
+
+	// https://github.com/go-playground/validator 借助它实现数据校验,定义结构体持有 validator并且实现方法
+	// echo使用定义好的Validator
+	e.Validator = &RequestValidator{validator: validator.New()}
+	e.POST("/valid", func(context echo.Context) error {
+		u := new(User)
+		err := context.Bind(u)
+		if err != nil {
+			return err
+		}
+		//调用僬侥结构体的校验函数 执行校验
+		err = context.Validate(u)
+		if err != nil {
+			return err
+		}
+		// 返回
+		return context.JSON(200, u)
+	})
+
 	e.GET("/echo", func(context echo.Context) error {
 		return context.String(200, "echo返回内容")
 	})
@@ -49,8 +94,8 @@ func EchoMain() {
 
 	// 中间件：root group route 三种
 	// root 级别
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	//e.Use(middleware.Logger())
+	//e.Use(middleware.Recover())
 
 	// group todo
 	g := e.Group("/mw")
@@ -72,7 +117,57 @@ func EchoMain() {
 	e.GET("/admin/mw", func(context echo.Context) error {
 		return context.String(http.StatusOK, "成功")
 	}, mw)
-	// 自定义选项
-	//
+	// 上下文 echo.Context 表示http请求的上下文
+	// Context 是接口 可以自己实现 或者 定义结构体持有
+	e.Use(func(handlerFunc echo.HandlerFunc) echo.HandlerFunc {
+		return func(context echo.Context) error {
+			// 新建 MyCtx 返回
+			ctx := &MyCtx{context}
+			return handlerFunc(ctx)
+		}
+	})
+	// 接收使用定义的中间件
+	e.GET("/ctx", func(context echo.Context) error {
+		// 这里直接断言
+		ctx := context.(*MyCtx)
+		// 调用ctx定义的方法
+		ctx.foo()
+		ctx.bar()
+		// 处理请求
+		return ctx.String(http.StatusOK, "OK")
+	})
+
+	// 配合http.Cookie实现读写cookie
+	e.GET("/createCookie", func(context echo.Context) error {
+		cookie := new(http.Cookie)
+		cookie.Name = "username"
+		cookie.Value = "RookieOHY"
+		cookie.Expires = time.Now().Add(24 * time.Hour)
+		context.SetCookie(cookie)
+		return context.String(http.StatusOK, "create cookie ok")
+	})
+
+	e.GET("/readCookie", func(context echo.Context) error {
+		cookie, err := context.Cookie("username")
+		if err != nil {
+			return err
+		}
+		println(cookie.Name)
+		println(cookie.Value)
+
+		// 获取所有的cookie
+		cookies := context.Cookies()
+		for _, c := range cookies {
+			println("c->" + c.Value)
+		}
+
+		return context.String(http.StatusOK, cookie.Value)
+	})
+
+	// 响应总结：字符串、json、html、xml、file、blob
+	e.GET("/respType", func(context echo.Context) error {
+		return nil
+	})
+
 	e.Start(":9999")
 }
