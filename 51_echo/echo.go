@@ -1,6 +1,7 @@
 package _1_echo
 
 import (
+	"encoding/json"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -166,8 +167,35 @@ func EchoMain() {
 
 	// 响应总结：字符串、json、html、xml、file、blob
 	e.GET("/respType", func(context echo.Context) error {
-		return nil
+		// 字符串
+		//err := context.String(200, "string")
+		// html
+		//err := context.HTML(200,"<h1>string</h1>")
+		// json 或者 美化的json
+		user := &User{
+			Name:  "returnName",
+			Email: "returnName@qq.com",
+		}
+		//err := context.JSON(200,user)
+
+		// json流 适用于大对象返回 效率高
+		context.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		context.Response().WriteHeader(http.StatusOK)
+		return json.NewEncoder(context.Response()).Encode(user)
 	})
+
+	// Hook 响应前和后执行的逻辑
+	e.GET("/hook", func(context echo.Context) error {
+		context.Response().Before(func() {
+			println("请求前打印...")
+		})
+		context.Response().After(func() {
+			println("请求后打印...")
+		})
+		return context.String(200, "hook")
+	})
+
+	// 路由
 
 	e.Start(":9999")
 }

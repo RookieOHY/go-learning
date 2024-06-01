@@ -35,3 +35,6 @@ Content-Type: application/json
   "name": "ohy",
   "email": "ohy@errordomain"
 }
+
+###
+GET http://localhost:9999/respType
