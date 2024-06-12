@@ -195,7 +195,19 @@ func EchoMain() {
 		return context.String(200, "hook")
 	})
 
-	// 路由
+	// 路由对象：可以设置路由的名字
+	// 路由组：具有相同前缀的可以定位一组路由
+	group := e.Group("/group")
+	group.Use(middleware.BasicAuth(func(username string, password string, context echo.Context) (bool, error) {
+		if username == "ohy" && password == "123456" {
+			return true, nil
+		}
+		return false, nil
+	}))
+
+	e.GET("/group/test", func(context echo.Context) error {
+		return context.String(200, "group ok")
+	})
 
 	e.Start(":9999")
 }

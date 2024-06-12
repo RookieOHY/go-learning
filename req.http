@@ -38,3 +38,7 @@ Content-Type: application/json
 
 ###
 GET http://localhost:9999/respType
+
+
+###
+GET http://localhost:9999/group/test
