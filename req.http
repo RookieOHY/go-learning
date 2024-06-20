@@ -79,3 +79,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTkxMTA1M
 ### 测试历史消息分页
 GET http://localhost:9999/posts/1/2
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTkxMTA1MDksImlkIjoiNjY3Mzk1M2VmMDgwZjQ0OWQwYzI2YzM1In0.iDCDaEQYlIsXVgjbdIwht1g8R_20IcdXUAsHqDp6eOI
+
+
+### 测试
+GET http://localhost:9999/stats

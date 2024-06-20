@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+	"sync"
 	"time"
 )
 
@@ -225,4 +227,77 @@ func EchoMain() {
 	// use 路由执行后执行
 	// 组 定义一个路由组后为该组设置统一的处理方法
 	e.Start(":9999")
+}
+
+// MW 自定义中间件：统计请求数、时间、状态
+
+type Stats struct {
+	// 读写锁 、 请求总数 、 更新时间 、 状态集合
+	UpdateTime time.Time      `json:"updateTime"`
+	ReqCount   uint64         `json:"reqCount"`
+	States     map[string]int `json:"states"`
+	mutex      sync.RWMutex
+}
+
+// InitStats initStats 初始化一些值：更新时间和map
+func InitStats() *Stats {
+	return &Stats{
+		UpdateTime: time.Now(),
+		States:     make(map[string]int),
+	}
+}
+
+func RespHeader(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(context echo.Context) error {
+		context.Response().Header().Set(echo.HeaderServer, "Echo/3.0")
+		return next(context)
+	}
+}
+
+func (s *Stats) Process(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(context echo.Context) error {
+		err := next(context)
+		if err != nil {
+			context.Error(err)
+		}
+		// 中间件的逻辑
+		s.mutex.Lock()
+		defer s.mutex.Unlock()
+		// 请求次数自增
+		// 请求状态设置和自增
+		s.ReqCount++
+		status := context.Response().Status
+		s.States[strconv.Itoa(status)]++
+		return nil
+	}
+}
+
+// 路由方法
+func (s *Stats) Method(c echo.Context) error {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
+	return c.JSON(200, s)
+}
+
+// 使用2个中间件
+
+func MW() {
+	e := echo.New()
+	e.Debug = true
+	stats := InitStats()
+	// 使用中间件
+	e.Use(stats.Process)
+
+	// 路由
+	e.GET("/stats", stats.Method)
+
+	e.Use(RespHeader)
+
+	// 根路由
+	e.GET("/", func(context echo.Context) error {
+		return context.JSON(200, "测试ok")
+	})
+
+	// 端口
+	e.Logger.Fatal(e.Start(":9999"))
 }
