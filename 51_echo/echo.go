@@ -5,6 +5,8 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 )
@@ -195,7 +197,7 @@ func EchoMain() {
 		return context.String(200, "hook")
 	})
 
-	// 路由对象：可以设置路由的名字
+	// 路由对象：可以设置路由的名字 如group.Name
 	// 路由组：具有相同前缀的可以定位一组路由
 	group := e.Group("/group")
 	group.Use(middleware.BasicAuth(func(username string, password string, context echo.Context) (bool, error) {
@@ -205,9 +207,22 @@ func EchoMain() {
 		return false, nil
 	}))
 
+	// 这里的第二个参数，可以申明在外部；如 m:= func(){}
 	e.GET("/group/test", func(context echo.Context) error {
 		return context.String(200, "group ok")
 	})
 
+	// 路由列表 *routes
+	routes := e.Routes()
+	indent, err := json.MarshalIndent(routes, "", " ")
+	if err != nil {
+		log.Fatal("转json错误")
+	}
+	ioutil.WriteFile("routes.json", indent, 0644)
+
+	// 中间件：可以统计请求数量、鉴权、总是在响应返回前执行
+	// pre 路由执行前，对请求入参的crud 如：内置中间件pre
+	// use 路由执行后执行
+	// 组 定义一个路由组后为该组设置统一的处理方法
 	e.Start(":9999")
 }

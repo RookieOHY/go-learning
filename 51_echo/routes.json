@@ -1,0 +1,267 @@
+[
+ {
+  "method": "POST",
+  "path": "/group/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "OPTIONS",
+  "path": "/mw/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "PATCH",
+  "path": "/mw/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/respType",
+  "name": "go-learning/51_echo.EchoMain.func14"
+ },
+ {
+  "method": "CONNECT",
+  "path": "/mw",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/admin/mw",
+  "name": "go-learning/51_echo.EchoMain.func9"
+ },
+ {
+  "method": "TRACE",
+  "path": "/group",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "PATCH",
+  "path": "/group/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "TRACE",
+  "path": "/group/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "CONNECT",
+  "path": "/mw/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "HEAD",
+  "path": "/mw/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "TRACE",
+  "path": "/mw/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/createCookie",
+  "name": "go-learning/51_echo.EchoMain.func12"
+ },
+ {
+  "method": "PATCH",
+  "path": "/group",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/echo",
+  "name": "go-learning/51_echo.EchoMain.func2"
+ },
+ {
+  "method": "DELETE",
+  "path": "/mw",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "PUT",
+  "path": "/mw",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "CONNECT",
+  "path": "/group/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/mw/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "POST",
+  "path": "/mw/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/hook",
+  "name": "go-learning/51_echo.EchoMain.func15"
+ },
+ {
+  "method": "CONNECT",
+  "path": "/group",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "DELETE",
+  "path": "/group",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "PUT",
+  "path": "/group",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/user/:id",
+  "name": "go-learning/51_echo.EchoMain.func3"
+ },
+ {
+  "method": "GET",
+  "path": "/user",
+  "name": "go-learning/51_echo.EchoMain.func4"
+ },
+ {
+  "method": "POST",
+  "path": "/group",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "DELETE",
+  "path": "/group/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/group/test",
+  "name": "go-learning/51_echo.EchoMain.func17"
+ },
+ {
+  "method": "POST",
+  "path": "/user/save",
+  "name": "go-learning/51_echo.EchoMain.func6"
+ },
+ {
+  "method": "PROPFIND",
+  "path": "/mw/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/ctx",
+  "name": "go-learning/51_echo.EchoMain.func11"
+ },
+ {
+  "method": "TRACE",
+  "path": "/mw",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/group",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "OPTIONS",
+  "path": "/group",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "PATCH",
+  "path": "/mw",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "POST",
+  "path": "/mw",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "PROPFIND",
+  "path": "/group",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "POST",
+  "path": "/valid",
+  "name": "go-learning/51_echo.EchoMain.func1"
+ },
+ {
+  "method": "PUT",
+  "path": "/mw/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/readCookie",
+  "name": "go-learning/51_echo.EchoMain.func13"
+ },
+ {
+  "method": "POST",
+  "path": "/form",
+  "name": "go-learning/51_echo.EchoMain.func5"
+ },
+ {
+  "method": "GET",
+  "path": "/mw",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "DELETE",
+  "path": "/mw/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "PUT",
+  "path": "/group/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "HEAD",
+  "path": "/mw",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "HEAD",
+  "path": "/group/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "PROPFIND",
+  "path": "/group/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "OPTIONS",
+  "path": "/group/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "OPTIONS",
+  "path": "/mw",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "PROPFIND",
+  "path": "/mw",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/group/*",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ },
+ {
+  "method": "HEAD",
+  "path": "/group",
+  "name": "github.com/labstack/echo.(*Group).Use.func1"
+ }
+]

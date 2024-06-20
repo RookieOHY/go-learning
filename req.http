@@ -42,3 +42,40 @@ GET http://localhost:9999/respType
 
 ###
 GET http://localhost:9999/group/test
+
+
+### 测试signup
+POST http://localhost:9999/signup
+Content-Type: application/json
+
+{
+  "password": "ohy",
+  "email": "ohy@errordomain"
+}
+
+### 测试登录 login
+POST http://localhost:9999/login
+Content-Type: application/json
+
+{
+  "password": "ohy",
+  "email": "ohy@errordomain"
+}
+
+### 测试关注某人
+POST http://localhost:9999/follow/6673953ef080f449d0c26c35
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTkxMTA1MDksImlkIjoiNjY3Mzk1M2VmMDgwZjQ0OWQwYzI2YzM1In0.iDCDaEQYlIsXVgjbdIwht1g8R_20IcdXUAsHqDp6eOI
+
+### 测试发送消息
+POST http://localhost:9999/post
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTkxMTA1MDksImlkIjoiNjY3Mzk1M2VmMDgwZjQ0OWQwYzI2YzM1In0.iDCDaEQYlIsXVgjbdIwht1g8R_20IcdXUAsHqDp6eOI
+
+{
+  "message": "你好啊~",
+  "to": "ohy@errordomain"
+}
+
+### 测试历史消息分页
+GET http://localhost:9999/posts/1/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTkxMTA1MDksImlkIjoiNjY3Mzk1M2VmMDgwZjQ0OWQwYzI2YzM1In0.iDCDaEQYlIsXVgjbdIwht1g8R_20IcdXUAsHqDp6eOI
