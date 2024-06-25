@@ -83,3 +83,24 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTkxMTA1M
 
 ### 测试
 GET http://localhost:9999/stats
+
+
+### 测试iris基本使用
+GET http://localhost:9999/cfg
+
+
+### 测试iris获取路径参数
+GET http://localhost:9999/testPath02/100
+
+
+### 测试自定义宏
+GET http://localhost:9999/jwdLint/36.000/-50.350
+
+### 测试自定义宏2
+GET http://localhost:9999/max/ab
+
+### 测试自定义宏3
+GET http://localhost:9999/username/kiwiii
+
+### 测试404
+GET http://localhost:9999/xxxxx
