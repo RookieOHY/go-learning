@@ -99,6 +99,8 @@ func BaseUsage() {
 	app.OnErrorCode(iris.StatusNotFound, notFound)
 	app.OnErrorCode(iris.StatusInternalServerError, internalServerError)
 
+	// api的版本管理todo 配合包github.com/kataras/iris/v12/versioning
+
 	app.Run(iris.Addr(":9999"), cfg02)
 }
 
